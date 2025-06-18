@@ -1,0 +1,2275 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>uxubook - Educational Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Prioritize Inter for English/Latin, Cairo for Arabic, and generic sans-serif for others -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&family=Cairo:wght=700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; /* Default font for English and Latin-based languages */
+            background-color: #F8FAFC; /* Light White background */
+        }
+        /* New dark text color - a deep forest green */
+        .text-dark-text {
+            color: #0A3D0A; 
+        }
+        /* Header/Footer gradient and shimmer effect */
+        .bg-header-footer {
+            /* Mixed vibrant colors for gradient: Red, Orange, Yellow, Green, Blue, Indigo, Violet */
+            background: linear-gradient(90deg, #FF6B6B 0%, #FFD166 15%, #06D6A0 30%, #118AB2 45%, #073B4C 60%, #4B0082 80%, #FF6B6B 100%);
+            background-size: 400% 100%; /* Make it wider for shimmer effect */
+            animation: shimmer 8s infinite linear; /* Slower shimmer animation */
+            color: white; /* Ensure text on header/footer is white */
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: 100% 0; /* Start from right */
+            }
+            100% {
+                background-position: -100% 0; /* Move to left continuously */
+            }
+        }
+        /* Primary button - green */
+        .btn-primary {
+            background-color: #10B981; /* Medium green */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            background-color: #059669; /* Darker green on hover */
+            transform: translateY(-2px);
+        }
+        .course-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+        /* Aspect ratio for video iframe */
+        .aspect-video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 0.75rem;
+        }
+        .aspect-video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Custom styles for uxubook text logo - per character styling */
+        .uxubook-char {
+            display: inline-block; /* Allows individual transformation */
+            font-weight: 900; /* Even bolder */
+            line-height: 1; /* Adjust line height to prevent vertical spacing issues */
+            transition: text-shadow 0.3s ease-in-out;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Subtle glow */
+            white-space: nowrap; /* Prevent line breaks within the logo text */
+        }
+
+        /* Different colors for each character (more vibrant palette) */
+        .uxubook-char.u { color: #FF0000; } /* Bright Red */
+        .uxubook-char.x { color: #FFA500; } /* Orange */
+        .uxubook-char.u2 { color: #32CD32; } /* Lime Green */
+        .uxubook-char.b { color: #00BFFF; } /* Deep Sky Blue */
+        .uxubook-char.o { color: #8A2BE2; } /* Blue Violet */
+        .uxubook-char.o2 { color: #FF1493; } /* Deep Pink */
+        .uxubook-char.k { color: #00FFFF; } /* Cyan */
+        
+        /* Font sizes for header logo characters */
+        .uxubook-logo-header .uxubook-char { font-size: 2.5rem; } /* Default larger size */
+        .uxubook-logo-header .uxubook-char:nth-child(2) { font-size: 1.8rem; } /* x */
+        .uxubook-logo-header .uxubook-char:nth-child(4) { font-size: 2.0rem; } /* b */
+        .uxubook-logo-header .uxubook-char:nth-child(6) { font-size: 1.7rem; } /* second o */
+
+        /* Header Logo container to ensure LTR direction */
+        .uxubook-logo-header {
+            display: inline-flex;
+            align-items: flex-end;
+            position: relative;
+            height: 2.8rem;
+            direction: ltr; /* Force LTR direction for the logo text */
+        }
+
+
+        /* Footer logo styling - now plain text, no specific font size or animation */
+        .uxubook-logo-footer-plain {
+            font-size: 1.2rem; /* A reasonable default size for plain footer text */
+            font-weight: 700; /* Bold, but not animated */
+            color: white; /* Ensure it's white on the header/footer background */
+            display: inline-block; /* To ensure it sits inline with other text */
+        }
+
+        /* Chat Assistant Styles */
+        .chat-toggle-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #10B981; /* Green */
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+        .chat-toggle-button:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-modal {
+            position: fixed;
+            bottom: 90px; /* Above the button */
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            z-index: 101;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #0A3D0A; /* Darker green */
+            color: white;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .chat-body {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #F8FAFC;
+        }
+        .chat-message {
+            margin-bottom: 10px;
+            display: flex;
+        }
+        .chat-message.user .message-bubble {
+            background-color: #DCF8C6; /* Light green for user */
+            margin-left: auto;
+            border-radius: 10px 10px 0 10px;
+        }
+        .chat-message.ai .message-bubble {
+            background-color: #E0E0E0; /* Light gray for AI */
+            margin-right: auto;
+            border-radius: 10px 10px 10px 0;
+        }
+        .message-bubble {
+            padding: 8px 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #E0E0E0;
+            background-color: white;
+        }
+        .chat-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #E0E0E0;
+            border-radius: 20px;
+            margin-right: 10px;
+            outline: none;
+        }
+        .chat-send-btn {
+            background-color: #10B981; /* Green */
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .chat-send-btn:hover:not(:disabled) {
+            background-color: #059669; /* Darker green */
+        }
+        .chat-send-btn:disabled {
+            background-color: #A5D6A7; /* Lighter green when disabled */
+            cursor: not-allowed;
+        }
+
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30px;
+            margin-top: 10px;
+        }
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10B981;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: bounce 0.8s infinite ease-in-out alternate;
+        }
+        .loading-dot:nth-child(2) { animation-delay: 0.1s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.2s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Sidebar specific styles */
+        .main-layout {
+            display: flex; /* Use flexbox for main content and sidebar */
+            padding: 1rem; /* Adjust padding for the whole layout */
+            flex-grow: 1;
+        }
+
+        .sidebar {
+            width: 300px; /* Fixed width for the sidebar */
+            position: fixed;
+            top: 0;
+            height: 100vh; /* Full viewport height */
+            z-index: 40; /* Lower than chat modal, higher than general content */
+            background-color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            display: flex; /* Always flex to maintain internal layout */
+            flex-direction: column;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* LTR specific sidebar positioning and animation */
+        html[dir="ltr"] .sidebar {
+            left: 0;
+            transform: translateX(-100%); /* Start off-screen to the left */
+        }
+        html[dir="ltr"] .sidebar.open {
+            transform: translateX(0); /* Slide in to the left */
+        }
+
+        /* RTL specific sidebar positioning and animation */
+        html[dir="rtl"] .sidebar {
+            right: 0;
+            transform: translateX(100%); /* Start off-screen to the right */
+        }
+        html[dir="rtl"] .sidebar.open {
+            transform: translateX(0); /* Slide in to the right */
+        }
+
+        /* Hide the sidebar completely when not open (using hidden class for display:none) */
+        .sidebar.hidden {
+            display: none;
+        }
+
+        /* Overlay for when sidebar is open */
+        #sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 30; /* Below sidebar, above content */
+            display: none; /* Initially hidden */
+        }
+        #sidebar-overlay.open {
+            display: block; /* Show when sidebar is open */
+        }
+
+
+        .main-content-area {
+            flex-grow: 1; /* Allow main content to take remaining space */
+            min-width: 0; /* Allow content to shrink */
+        }
+
+        .sidebar-header { /* New header for sidebar */
+            background-color: #0A3D0A; /* Darker green */
+            color: white;
+            padding: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-close-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1; /* Adjust to better center the X */
+            padding: 0 0.5rem;
+        }
+
+        .sidebar-body { /* New body for sidebar content */
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 { /* This rule now applies to the sidebar-header h3 */
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0; /* No margin here, handled by padding */
+            color: white; /* Changed to white for header */
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            padding: 0.75rem 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar li:hover {
+            background-color: #E0F2E0; /* Light green hover */
+        }
+
+        .sidebar li.active {
+            background-color: #10B981; /* Primary green for active lesson */
+            color: white;
+            font-weight: 600;
+        }
+        .sidebar li.active svg {
+            color: white; /* Ensure icon is white in active state */
+        }
+
+        .sidebar li svg {
+            margin-right: 0.5rem; /* Space between icon and text for LTR */
+            color: #0A3D0A; /* Dark green icon color */
+        }
+        html[dir="rtl"] .sidebar li svg {
+            margin-right: 0;
+            margin-left: 0.5rem; /* Space between icon and text for RTL */
+        }
+
+        /* Responsive adjustments for sidebar */
+        @media (max-width: 1024px) { /* On medium to small screens (lg breakpoint) */
+            .main-layout {
+                flex-direction: column; /* Stack sidebar and main content vertically */
+            }
+            /* The fixed sidebar will now overlay on small screens, so previous sidebar styles need to be removed/adjusted */
+            .sidebar {
+                width: 100%; /* Full width on small screens */
+            }
+            html[dir="ltr"] .sidebar {
+                transform: translateX(-100%); /* Still off-screen left */
+            }
+            html[dir="ltr"] .sidebar.open {
+                transform: translateX(0); /* Slide in */
+            }
+            html[dir="rtl"] .sidebar {
+                transform: translateX(100%); /* Still off-screen right */
+            }
+            html[dir="rtl"] .sidebar.open {
+                transform: translateX(0); /* Slide in */
+            }
+        }
+
+        /* Testimonial specific styles */
+        .testimonial-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .testimonial-card img {
+            width: 96px; /* 24 Tailwind units */
+            height: 96px; /* 24 Tailwind units */
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 3px solid #10B981; /* Green border */
+        }
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        @media (min-width: 640px) { /* sm breakpoint */
+            .testimonial-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) { /* lg breakpoint */
+            .testimonial-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        /* Loading spinner for images (kept for potential future use, but not actively used for external links) */
+        .image-spinner {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 2s linear infinite;
+            display: inline-block;
+            margin-bottom: 1rem; /* Match image margin */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-dark-text">
+
+    <!-- Header -->
+    <header class="bg-header-footer p-4 shadow-md">
+        <nav class="container mx-auto flex justify-between items-center">
+            <a href="#" id="home-link" class="text-2xl font-bold rounded-md hover:bg-gray-700 p-2 transition">
+                <!-- Dynamic Text Logo for header - No individual transforms for consistent RTL/LTR display -->
+                <span class="uxubook-logo-header">
+                    <span class="uxubook-char u">u</span>
+                    <span class="uxubook-char x">x</span>
+                    <span class="uxubook-char u2">u</span>
+                    <span class="uxubook-char b">b</span>
+                    <span class="uxubook-char o">o</span>
+                    <span class="uxubook-char o2">o</span>
+                    <span class="uxubook-char k">k</span>
+                </span>
+            </a>
+            <div class="flex items-center space-x-4">
+                <ul class="flex space-x-4">
+                    <li><a href="#" id="nav-courses" class="hover:text-green-300 rounded-md p-2 transition">Courses</a></li>
+                    <li><a href="#" id="nav-about" class="hover:text-green-300 rounded-md p-2 transition">About Us</a></li>
+                    <li><a href="#" id="nav-contact" class="hover:text-green-300 rounded-md p-2 transition">Contact</a></li>
+                </ul>
+                <!-- New Sidebar Toggle Button -->
+                <button id="sidebar-toggle-button" class="text-white text-2xl p-2 rounded-md hover:bg-gray-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <!-- Language Toggle Dropdown -->
+                <select id="language-select" class="p-2 rounded-md bg-transparent text-white border border-white hover:bg-gray-700 transition cursor-pointer">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sidebar for Lessons -->
+    <aside id="lessons-sidebar" class="fixed top-0 bottom-0 z-40 bg-white shadow-xl flex flex-col transition-transform duration-300 ease-in-out hidden">
+        <div class="sidebar-header">
+            <h3 id="sidebar-title">Lessons</h3>
+            <button id="sidebar-close-button" class="sidebar-close-button">&times;</button>
+        </div>
+        <div class="sidebar-body">
+            <ul id="sidebar-lesson-list">
+                <!-- Lessons will be dynamically loaded here -->
+            </ul>
+        </div>
+    </aside>
+    <!-- Overlay for sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
+
+
+    <!-- Main Content Area Wrapper -->
+    <div class="main-layout container mx-auto">
+        <main class="flex-grow min-w-0"> <!-- Added min-w-0 to allow content to shrink within flex -->
+            <!-- Hero Section - Initially Visible -->
+            <section id="hero-section" class="text-center py-16 bg-green-100 rounded-xl shadow-lg mb-12">
+                <h1 id="hero-title" class="text-4xl md:text-5xl font-extrabold mb-4 text-dark-text">
+                    Master Programming, Change Your Future
+                </h1>
+                <p id="hero-description" class="text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+                    Discover a wide range of interactive courses, carefully designed lessons, and curated YouTube videos to master programming skills.
+                </p>
+                <button id="explore-courses-btn" class="btn-primary text-lg font-semibold shadow-lg">Explore Courses Now</button>
+
+                <!-- Testimonials Section -->
+                <div id="testimonials-section" class="mt-16 px-4">
+                    <h2 id="testimonials-title" class="text-3xl font-bold mb-8 text-dark-text">What Our Students Say</h2>
+                    <div id="testimonials-grid" class="testimonial-grid">
+                        <!-- Testimonial cards will be injected here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Courses Listing Section - Initially hidden, will show after hero interaction -->
+            <section id="courses-listing" style="display: none;" class="py-8">
+                <h2 id="courses-listing-title" class="text-3xl font-bold text-center mb-8 text-dark-text">Our Programming Courses</h2>
+                
+                <!-- Search and Filter -->
+                <div class="mb-8 flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <input type="text" id="search-input" placeholder="Search for a course..." class="p-3 border border-gray-300 rounded-lg w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+                    <select id="level-filter" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+                        <option value="">All Levels</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                    <select id="category-filter" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+                        <option value="">All Categories</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Mobile Development">Mobile Development</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="Artificial Intelligence">Artificial Intelligence</option>
+                    </select>
+                </div>
+
+                <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Course cards will be injected here by JavaScript -->
+                </div>
+                <div id="no-results" class="hidden text-center text-gray-600 mt-8 text-lg">No matching results.</div>
+            </section>
+
+            <!-- Course Details Section - Initially hidden -->
+            <section id="course-details" style="display: none;" class="py-8">
+                <button id="back-to-courses" class="btn-primary mb-6 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Back to Courses
+                </button>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
+                    <h2 id="detail-course-title" class="text-3xl md:text-4xl font-bold mb-4 text-dark-text"></h2>
+                    <div class="mb-6 text-gray-700 flex flex-wrap gap-x-6 gap-y-2 text-lg">
+                        <p><strong class="font-semibold">Level:</strong> <span id="detail-course-level"></span></p>
+                        <p><strong class="font-semibold">Duration:</strong> <span id="detail-course-duration"></span></p>
+                        <p><strong class="font-semibold">Videos:</strong> <span id="detail-course-videos"></span></p>
+                        <p><strong class="font-semibold">Instructor:</strong> <span id="detail-course-instructor"></span></p>
+                    </div>
+                    
+                    <p id="detail-course-description" class="text-lg text-gray-800 leading-relaxed mb-8"></p>
+
+                    <div class="aspect-video-container mb-8">
+                        <iframe id="detail-video-player" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+
+                    <h3 id="course-content-title" class="text-2xl font-bold mb-4 text-dark-text">Course Content</h3>
+                    <ul id="lesson-list" class="space-y-3">
+                        <!-- Lessons will be injected here -->
+                    </ul>
+                </div>
+            </section>
+
+            <!-- About Us Section - Initially Hidden -->
+            <section id="about-us-section" class="py-8" style="display: none;">
+                <button id="back-from-about" class="btn-primary mb-6 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Back to Courses
+                </button>
+                <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
+                    <h2 id="about-us-title" class="text-3xl md:text-4xl font-bold mb-4 text-dark-text">About Us</h2>
+                    <p id="about-us-content-p1" class="text-lg text-gray-800 leading-relaxed mb-4">
+                        Welcome to uxubook, your premier destination for mastering programming skills. We believe that coding is a superpower that can transform lives and careers. Our platform is dedicated to providing high-quality, accessible, and engaging educational content for learners of all levels.
+                    </p>
+                    <p id="about-us-content-p2" class="text-lg text-gray-800 leading-relaxed">
+                        Our mission is to empower individuals worldwide with the knowledge and tools they need to succeed in the rapidly evolving tech industry. We offer a diverse range of courses, from web development basics to advanced artificial intelligence, all taught by experienced instructors. Join our community and embark on your learning journey with uxubook today!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Contact Us Section - Initially Hidden -->
+            <section id="contact-us-section" class="py-8" style="display: none;">
+                <button id="back-from-contact" class="btn-primary mb-6 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Back to Courses
+                </button>
+                <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
+                    <h2 id="contact-us-title" class="text-3xl md:text-4xl font-bold mb-4 text-dark-text">Contact Us</h2>
+                    <p id="contact-us-content-p1" class="text-lg text-gray-800 leading-relaxed mb-4">
+                        We'd love to hear from you! Whether you have questions about our courses, need technical support, or just want to provide feedback, our team is here to help.
+                    </p>
+                    <div class="text-lg text-gray-800 leading-relaxed">
+                        <p class="mb-2"><strong class="font-semibold" id="contact-email-label">Email:</strong> <a href="mailto:support@uxubook.com" class="text-blue-600 hover:underline">support@uxubook.com</a></p>
+                        <p class="mb-2"><strong class="font-semibold" id="contact-phone-label">Phone:</strong> +1 (123) 456-7890</p>
+                        <p class="mb-2"><strong class="font-semibold" id="contact-address-label">Address:</strong> 123 Learning Lane, Tech City, Global 54321</p>
+                        <p class="mb-2"><strong class="font-semibold" id="contact-hours-label">Business Hours:</strong> Monday - Friday, 9:00 AM - 5:00 PM (Local Time)</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-header-footer p-6 text-center mt-auto">
+        <div class="container mx-auto">
+            <p id="footer-text">
+                &copy; 2024 <span class="uxubook-logo-footer-plain">uxubook</span>. All rights reserved.
+            </p> 
+            <div class="flex justify-center space-x-4 mt-3">
+                <a href="#" id="privacy-link" class="hover:text-green-300 transition">Privacy Policy</a>
+                <a href="#" id="terms-link" class="hover:text-green-300 transition">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Message Box -->
+    <div id="message-box" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+            <p id="message-text" class="text-lg font-semibold text-dark-text mb-4"></p>
+            <button id="message-close-btn" class="btn-primary">Close</button>
+        </div>
+    </div>
+
+    <!-- Chat Assistant Floating Button -->
+    <button id="chat-toggle-button" class="chat-toggle-button">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.11C6.236 17.612 9.06 18 12 18c4.97 0 9-3.582 9-8s-4.03-8-9-8-9 3.582-9 8c0 1.097.31 2.123.855 3.013L3 17l2.145-.887A8.002 8.002 0 0112 4c4.97 0 9 3.582 9 8z" />
+        </svg>
+    </button>
+
+    <!-- Chat Assistant Modal -->
+    <div id="chat-modal" class="chat-modal hidden">
+        <div class="chat-header">
+            <span id="chat-assistant-name">uxubook AI Assistant</span>
+            <button id="chat-close-btn" class="chat-close-btn">&times;</button>
+        </div>
+        <div id="chat-body" class="chat-body">
+            <!-- Chat messages will be appended here -->
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Type your message...">
+            <button id="chat-send-btn" class="chat-send-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </button>
+        </div>
+        <div id="loading-indicator" class="loading-indicator hidden">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
+    </div>
+
+    <script>
+        // Define base English courses separately to avoid "undefined" issues when other languages reference it.
+        var baseEnglishCourses = [
+            {
+                id: 'web-dev-basics',
+                title: 'Web Development Basics for Beginners',
+                description: 'Learn HTML, CSS, and JavaScript to build interactive web pages. This course is the perfect starting point for every aspiring web developer.',
+                level: 'Beginner',
+                category: 'Web Development',
+                duration: '10 hours',
+                videos: 15,
+                instructor: 'Ahmed Ali',
+                thumbnail: 'https://placehold.co/400x225/E0F2E0/000?text=Web+Dev',
+                lessons: [
+                    { title: 'Introduction to Web Development', youtubeId: 'B-xM_f-T2fM' },
+                    { title: 'Building Structure with HTML', youtubeId: 'videoseries?list=PLbTEF4FfU-v6pU031oM6mGvP7Cj-gQJpC' },
+                    { title: 'Styling Pages with CSS', youtubeId: 'videoseries?list=PL4cUxeGkcC9hp0wYV_Y-fkzC_C0aaNn7E' },
+                    { title: 'Adding Interactivity with JavaScript', youtubeId: 'W6NZfCO5sPU' },
+                    { title: 'Final Project: Personal Portfolio Page', youtubeId: 'zy_01T_n9g8' },
+                    { title: 'Advanced CSS Layouts', youtubeId: 'videoseries?list=PL4cUxeGkcC9gs-D20F_gB-P9Yf4G554S' },
+                    { title: 'Responsive Web Design', youtubeId: 'videoseries?list=PL4cUxeGkcC9j_DvgP_8Q1xS6Zf5D1gT3m' },
+                    { title: 'Introduction to Webpack', youtubeId: 'videoseries?list=PL4cUxeGkcC9hN_J4B3c_B0pW4x4K3T5gQ' },
+                    { title: 'Understanding Promises and Async/Await', youtubeId: 'videoseries?list=PL4cUxeGkcC9ggrk_Gj_aN-o_JgA-K2A5T' },
+                    { title: 'Frontend Frameworks Overview', youtubeId: 'videoseries?list=PL4cUxeGkcC9j-J_X1i5f5n_J8e_J2j_k8' }
+                ]
+            },
+            {
+                id: 'python-for-data',
+                title: 'Python for Data Science',
+                description: 'Discover the power of Python in data analysis and visualization. Learn essential libraries like NumPy, Pandas, and Matplotlib. This course covers everything from data loading to advanced machine learning models.',
+                level: 'Intermediate',
+                category: 'Data Science',
+                duration: '15 hours',
+                videos: 20,
+                instructor: 'Fatima Mohamed',
+                thumbnail: 'https://placehold.co/400x225/CCE8CC/000?text=Data+Science',
+                lessons: [
+                    { title: 'Introduction to Python for Data Science', youtubeId: 'qwAFAkC7q0Q' },
+                    { title: 'Working with Data using Pandas', youtubeId: 'C_jXN7v29S4' },
+                    { title: 'Numerical Analysis with NumPy', youtubeId: 'GBU02gU5I18' },
+                    { title: 'Data Visualization with Matplotlib & Seaborn', youtubeId: 'pH8Z0d5C2fQ' },
+                    { title: 'Final Project: Dataset Analysis', youtubeId: 'kP-Q_2S4V2k' },
+                    { title: 'Machine Learning Basics with Scikit-learn', youtubeId: 'videoseries?list=PLB5Q1A7CgQ3K1Zz2T6N4C6E2X7X8X5X1' },
+                    { title: 'Deep Learning with Keras and TensorFlow', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                    { title: 'Data Cleaning and Preprocessing', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                    { title: 'Statistical Thinking in Python', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                    { title: 'Big Data Processing with PySpark', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' }
+                ]
+            },
+            {
+                id: 'mobile-app-intro',
+                title: 'Introduction to Mobile App Development (React Native)',
+                description: 'Start your journey in building cross-platform mobile apps using React Native. Learn core principles and how to set up your development environment. This course covers basic UI, navigation, and API integration.',
+                level: 'Beginner',
+                category: 'Mobile Development',
+                duration: '8 hours',
+                videos: 12,
+                instructor: 'Yousef Khaled',
+                thumbnail: 'https://placehold.co/400x225/BBE0BB/000?text=Mobile+App',
+                lessons: [
+                    { title: 'Why React Native?', youtubeId: 'vQfQ3a_Qo8U' },
+                    { title: 'Setting Up Your Development Environment', youtubeId: 'k-H2BwE_hJc' },
+                    { title: 'Basic Components in React Native', youtubeId: 'FfQzS-aF7D4' },
+                    { title: 'Screen Navigation', youtubeId: 'S-rXoQ9rCwo' },
+                    { title: 'Building Your First App', youtubeId: '0-S-iJ3e7a0' },
+                    { title: 'Working with APIs in React Native', youtubeId: 'videoseries?list=PL4cUxeGkcC9i_bK_Q2C5G_K5V_A7_N7T' },
+                    { title: 'State Management with Redux', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                    { title: 'Debugging React Native Apps', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                    { title: 'Native Device Features Access', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                    { title: 'Deployment to App Stores', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' }
+                ]
+            },
+            {
+                id: 'ai-ml-fundamentals',
+                title: 'Fundamentals of AI and Machine Learning',
+                description: 'Learn the basic concepts of Artificial Intelligence and Machine Learning, including common learning types and algorithms. Explore neural networks, natural language processing, and computer vision.',
+                level: 'Intermediate',
+                category: 'Artificial Intelligence',
+                duration: '12 hours',
+                videos: 18,
+                instructor: 'Laila Ahmed',
+                thumbnail: 'https://placehold.co/400x225/D0E8D0/000?text=AI%2FML',
+                lessons: [
+                    { title: 'What is Artificial Intelligence?', youtubeId: 'Jg7xX0-4_eE' },
+                    { title: 'Introduction to Machine Learning', youtubeId: 'ukzFI9rgWFw' },
+                    { title: 'Supervised vs. Unsupervised Learning', youtubeId: 'jVn2Pq-s3t4' },
+                    { title: 'Common Algorithms: Regression & Classification', youtubeId: 'aircAruvnKk' },
+                    { title: 'Simple Applied Projects', youtubeId: 'K_D8YyJ2zGk' },
+                    { title: 'Neural Networks and Deep Learning', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                    { title: 'Natural Language Processing Basics', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                    { title: 'Computer Vision Fundamentals', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                    { title: 'Ethical AI Considerations', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                    { title: 'Reinforcement Learning Introduction', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' }
+                ]
+            }
+        ];
+
+        // Language content map
+        var translations = {
+            'en': {
+                lang_code: 'en',
+                lang_name: 'English',
+                lang_dir: 'ltr',
+                lang_font: 'Inter',
+                title: 'uxubook - Educational Platform',
+                nav_courses: 'Courses',
+                nav_about: 'About Us',
+                nav_contact: 'Contact',
+                hero_title: 'Master Programming, Change Your Future',
+                hero_description: 'Discover a wide range of interactive courses, carefully designed lessons, and curated YouTube videos to master programming skills.',
+                explore_courses_btn: 'Explore Courses Now',
+                courses_listing_title: 'Our Programming Courses',
+                search_placeholder: 'Search for a course...',
+                all_levels: 'All Levels',
+                beginner: 'Beginner',
+                intermediate: 'Intermediate',
+                advanced: 'Advanced',
+                all_categories: 'All Categories',
+                web_dev: 'Web Development',
+                mobile_dev: 'Mobile Development',
+                data_science: 'Data Science',
+                ai: 'Artificial Intelligence',
+                no_results: 'No matching results.',
+                back_to_courses: 'Back to Courses',
+                level: 'Level',
+                duration: 'Duration',
+                videos: 'Videos',
+                instructor: 'Instructor',
+                course_content: 'Course Content',
+                view_course: 'View Course',
+                footer_text_prefix: '&copy; 2024 ', 
+                footer_text_suffix: '. All rights reserved.', 
+                chat_assistant_name: 'uxubook AI Assistant',
+                chat_input_placeholder: 'Type your message...',
+                chat_about_us_ai_response: 'uxubook is an educational platform dedicated to helping you master programming skills through interactive courses and curated YouTube videos. Our goal is to make learning accessible and engaging.',
+                chat_contact_ai_response: 'You can contact us via email at support@uxubook.com or visit our Contact Us page for more options.',
+                privacy_policy: 'Privacy Policy',
+                terms_of_service: 'Terms of Service',
+                sidebar_lessons_title: 'Course Lessons',
+                about_us_title: 'About Us',
+                about_us_content_p1: 'Welcome to uxubook, your premier destination for mastering programming skills. We believe that coding is a superpower that can transform lives and careers. Our platform is dedicated to providing high-quality, accessible, and engaging educational content for learners of all levels.',
+                about_us_content_p2: 'Our mission is to empower individuals worldwide with the knowledge and tools they need to succeed in the rapidly evolving tech industry. We offer a diverse range of courses, from web development basics to advanced artificial intelligence, all taught by experienced instructors. Join our community and embark on your learning journey with uxubook today!',
+                contact_us_title: 'Contact Us',
+                contact_us_content_p1: 'We\'d love to hear from you! Whether you have questions about our courses, need technical support, or just want to provide feedback, our team is here to help.',
+                contact_us_email: 'Email',
+                contact_us_phone: 'Phone',
+                contact_us_address: 'Address',
+                contact_us_business_hours: 'Business Hours',
+                testimonials_title: 'What Our Students Say',
+                testimonials: [
+                    {
+                        name: 'Sarah M.',
+                        experience: 'I started with zero coding experience, and now I\'m building my own web applications! uxubook made learning fun and easy to understand.',
+                        imageUrl: 'https://placehold.co/96x96/ADD8E6/000?text=Sarah' 
+                    },
+                    {
+                        name: 'Ahmed K.',
+                        experience: 'The data science course was incredibly detailed and practical. It helped me land my dream job as a data analyst.',
+                        imageUrl: 'https://placehold.co/96x96/90EE90/000?text=Ahmed'
+                    },
+                    {
+                        name: 'Maria L.',
+                        experience: 'As a busy professional, the flexible lessons allowed me to learn at my own pace. Highly recommend uxubook for mobile development!',
+                        imageUrl: 'https://placehold.co/96x96/FFB6C1/000?text=Maria'
+                    }
+                ],
+                courses: baseEnglishCourses // Assign the base English courses
+            },
+            'ar': {
+                lang_code: 'ar',
+                lang_name: 'العربية',
+                lang_dir: 'rtl',
+                lang_font: 'Cairo',
+                title: 'uxubook - منصة تعليمية',
+                nav_courses: 'الدورات',
+                nav_about: 'عنا',
+                nav_contact: 'اتصل بنا',
+                hero_title: 'أتقن البرمجة، غيّر مستقبلك',
+                hero_description: 'اكتشف مجموعة واسعة من الدورات التفاعلية، الدروس المصممة بعناية، وفيديوهات YouTube المنسقة لتتقن مهارات البرمجة.',
+                explore_courses_btn: 'استكشف الدورات الآن',
+                courses_listing_title: 'دوراتنا البرمجية',
+                search_placeholder: 'ابحث عن دورة...',
+                all_levels: 'جميع المستويات',
+                beginner: 'مبتدئ',
+                intermediate: 'متوسط',
+                advanced: 'متقدم',
+                all_categories: 'جميع الفئات',
+                web_dev: 'تطوير الويب',
+                mobile_dev: 'تطبيقات الجوال',
+                data_science: 'علم البيانات',
+                ai: 'الذكاء الاصطناعي',
+                no_results: 'لا توجد نتائج مطابقة.',
+                back_to_courses: 'العودة للدورات',
+                level: 'المستوى',
+                duration: 'المدة',
+                videos: 'الفيديوهات',
+                instructor: 'المدرب',
+                course_content: 'محتوى الدورة',
+                view_course: 'شاهد الدورة',
+                footer_text_prefix: '&copy; 2024 ', 
+                footer_text_suffix: '. جميع الحقوق محفوظة.', 
+                privacy_policy: 'سياسة الخصوصية',
+                terms_of_service: 'شروط الاستخدام',
+                chat_assistant_name: 'مساعد uxubook للذكاء الاصطناعي',
+                chat_input_placeholder: 'اكتب رسالتك...',
+                chat_about_us_ai_response: 'uxubook هي منصة تعليمية مخصصة لمساعدتك على إتقان مهارات البرمجة من خلال الدورات التفاعلية ومقاطع الفيديو المنسقة من YouTube. هدفنا هو جعل التعلم متاحاً وجذاباً.',
+                chat_contact_ai_response: 'يمكنك التواصل معنا عبر البريد الإلكتروني على support@uxubook.com أو زيارة صفحة اتصل بنا لمزيد من الخيارات.',
+                sidebar_lessons_title: 'دروس الدورة',
+                about_us_title: 'عنا',
+                about_us_content_p1: 'مرحباً بك في uxubook، وجهتك الأولى لإتقان مهارات البرمجة. نحن نؤمن بأن البرمجة قوة خارقة يمكنها تحويل الحياة والمسارات المهنية. تكرس منصتنا جهودها لتقديم محتوى تعليمي عالي الجودة ومتاح وجذاب للمتعلمين من جميع المستويات.',
+                about_us_content_p2: 'مهمتنا هي تمكين الأفراد في جميع أنحاء العالم بالمعرفة والأدوات التي يحتاجونها للنجاح في صناعة التكنولوجيا سريعة التطور. نحن نقدم مجموعة متنوعة من الدورات، من أساسيات تطوير الويب إلى الذكاء الاصطناعي المتقدم، وكلها يتم تدريسها بواسطة مدربين ذوي خبرة. انضم إلى مجتمعنا وابدأ رحلتك التعليمية مع uxubook اليوم!',
+                contact_us_title: 'اتصل بنا',
+                contact_us_content_p1: 'نحن متحمسون لسماع أخبارك! سواء كانت لديك أسئلة حول دوراتنا، أو تحتاج إلى دعم فني، أو ترغب فقط في تقديم ملاحظات، فإن فريقنا هنا للمساعدة.',
+                contact_us_email: 'البريد الإلكتروني',
+                contact_us_phone: 'الهاتف',
+                contact_us_address: 'العنوان',
+                contact_us_business_hours: 'ساعات العمل',
+                testimonials_title: 'ماذا يقول طلابنا',
+                testimonials: [
+                    {
+                        name: 'سارة محمد',
+                        experience: 'بدأت بدون أي خبرة في البرمجة، والآن أقوم ببناء تطبيقات الويب الخاصة بي! جعلت uxubook التعلم ممتعاً وسهل الفهم.',
+                        imageUrl: 'https://placehold.co/96x96/ADD8E6/000?text=سارة' 
+                    },
+                    {
+                        name: 'أحمد كمال',
+                        experience: 'كانت دورة علم البيانات مفصلة وعملية بشكل لا يصدق. لقد ساعدتني في الحصول على وظيفة أحلامي كمحلل بيانات.',
+                        imageUrl: 'https://placehold.co/96x96/90EE90/000?text=أحمد' 
+                    },
+                    {
+                        name: 'ماريا لويس',
+                        experience: 'بصفتي محترفة مشغولة، سمحت لي الدروس المرنة بالتعلم بالسرعة التي تناسبني. أوصي بشدة بـ uxubook لتطوير تطبيقات الجوال!',
+                        imageUrl: 'https://placehold.co/96x96/FFB6C1/000?text=ماريا' 
+                    }
+                ],
+                courses: [
+                    {
+                        id: 'web-dev-basics',
+                        title: 'أساسيات تطوير الويب للمبتدئين',
+                        description: 'تعلم HTML, CSS, و JavaScript لبناء صفحات الويب التفاعلية. هذه الدورة هي نقطة البداية المثالية لكل مطور ويب طموح.',
+                        level: 'مبتدئ',
+                        category: 'تطوير الويب',
+                        duration: '10 ساعات',
+                        videos: 15,
+                        instructor: 'أحمد علي',
+                        thumbnail: 'https://placehold.co/400x225/E0F2E0/000?text=Web+Dev',
+                        lessons: [
+                            { title: 'مقدمة إلى تطوير الويب', youtubeId: 'B-xM_f-T2fM' },
+                            { title: 'بناء الهيكل باستخدام HTML', youtubeId: 'videoseries?list=PLbTEF4FfU-v6pU031oM6mGgvsP7Cj-gQJpC' },
+                            { title: 'تنسيق الصفحات باستخدام CSS', youtubeId: 'videoseries?list=PL4cUxeGkcC9hp0wYV_Y-fkzC_C0aaNn7E' },
+                            { title: 'إضافة التفاعل بـ JavaScript', youtubeId: 'W6NZfCO5sPU' },
+                            { title: 'المشاريع النهائية: صفحة شخصية', youtubeId: 'zy_01T_n9g8' },
+                            { title: 'تخطيطات CSS المتقدمة', youtubeId: 'videoseries?list=PL4cUxeGkcC9gs-D20F_gB-P9Yf4G554S' },
+                            { title: 'تصميم الويب المتجاوب', youtubeId: 'videoseries?list=PL4cUxeGkcC9j_DvgP_8Q1xS6Zf5D1gT3m' },
+                            { title: 'مقدمة إلى Webpack', youtubeId: 'videoseries?list=PL4cUxeGkcC9hN_J4B3c_B0pW4x4K3T5gQ' },
+                            { title: 'فهم الوعود و Async/Await', youtubeId: 'videoseries?list=PL4cUxeGkcC9ggrk_Gj_aN-o_JgA-K2A5T' },
+                            { title: 'معالجة البيانات الضخمة باستخدام PySpark', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' }
+                        ]
+                    },
+                    {
+                        id: 'python-for-data',
+                        title: 'بايثون لعلوم البيانات',
+                        description: 'اكتشف قوة بايثون في تحليل البيانات وتصورها. تعلم المكتبات الأساسية مثل NumPy, Pandas, و Matplotlib.',
+                        level: 'متوسط',
+                        category: 'علم البيانات',
+                        duration: '15 ساعات',
+                        videos: 20,
+                        instructor: 'فاطمة محمد',
+                        thumbnail: 'https://placehold.co/400x225/CCE8CC/000?text=Data+Science',
+                        lessons: [
+                            { title: 'مقدمة إلى بايثون لعلوم البيانات', youtubeId: 'qwAFAkC7q0Q' },
+                            { title: 'التعامل مع البيانات باستخدام Pandas', youtubeId: 'C_jXN7v29S4' },
+                            { title: 'التحليل العددي باستخدام NumPy', youtubeId: 'GBU02gU5I18' },
+                            { title: 'تصور البيانات بـ Matplotlib و Seaborn', youtubeId: 'pH8Z0d5C2fQ' },
+                            { title: 'المشاريع النهائية: تحليل مجموعة بيانات', youtubeId: 'kP-Q_2S4V2k' },
+                            { title: 'أساسيات التعلم الآلي باستخدام Scikit-learn', youtubeId: 'videoseries?list=PLB5Q1A7CgQ3K1Zz2T6N4C6E2X7X8X5X1' },
+                            { title: 'التعلم العميق باستخدام Keras و TensorFlow', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                            { title: 'تنظيف البيانات ومعالجتها مسبقاً', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                            { title: 'التفكير الإحصائي في بايثون', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                            { title: 'معالجة البيانات الضخمة باستخدام PySpark', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' }
+                        ]
+                    },
+                    {
+                        id: 'mobile-app-intro',
+                        title: 'مقدمة لتطوير تطبيقات الجوال (React Native)',
+                        description: 'ابدأ رحلتك في بناء تطبيقات الجوال متعددة المنصات باستخدام React Native. تعلم المبادئ الأساسية وكيفية إعداد بيئة التطوير.',
+                        level: 'مبتدئ',
+                        category: 'تطبيقات الجوال',
+                        duration: '8 ساعات',
+                        videos: 12,
+                        instructor: 'يوسف خالد',
+                        thumbnail: 'https://placehold.co/400x225/BBE0BB/000?text=Mobile+App',
+                        lessons: [
+                            { title: 'لماذا React Native؟', youtubeId: 'vQfQ3a_Qo8U' },
+                            { title: 'إعداد بيئة التطوير', youtubeId: 'k-H2BwE_hJc' },
+                            { title: 'المكونات الأساسية في React Native', youtubeId: 'FfQzS-aF7D4' },
+                            { title: 'التنقل بين الشاشات', youtubeId: 'S-rXoQ9rCwo' },
+                            { title: 'بناء أول تطبيق لك', youtubeId: '0-S-iJ3e7a0' },
+                            { title: 'العمل مع APIs في React Native', youtubeId: 'videoseries?list=PL4cUxeGkcC9i_bK_Q2C5G_K5V_A7_N7T' },
+                            { title: 'إدارة الحالة باستخدام Redux', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                            { title: 'تصحيح أخطاء تطبيقات React Native', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                            { title: 'الوصول إلى ميزات الجهاز الأصلية', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                            { title: 'النشر في متاجر التطبيقات', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' }
+                        ]
+                    },
+                    {
+                        id: 'ai-ml-fundamentals',
+                        title: 'أساسيات الذكاء الاصطناعي والتعلم الآلي',
+                        description: 'تعرف على المفاهيم الأساسية للذكاء الاصطناعي والتعلم الآلي، بما في ذلك أنواع التعلم والخوارزميات الشائعة.',
+                        level: 'متوسط',
+                        category: 'الذكاء الاصطناعي',
+                        duration: '12 ساعات',
+                        videos: 18,
+                        instructor: 'ليلى أحمد',
+                        thumbnail: 'https://placehold.co/400x225/D0E8D0/000?text=AI%2FML',
+                        lessons: [
+                            { title: 'ما هو الذكاء الاصطناعي؟', youtubeId: 'Jg7xX0-4_eE' },
+                            { title: 'مقدمة إلى التعلم الآلي', youtubeId: 'ukzFI9rgWFw' },
+                            { title: 'التعلم الخاضع للإشراف وغير الخاضع للإشراف', youtubeId: 'jVn2Pq-s3t4' },
+                            { title: 'خوارزميات شائعة: الانحدار والتصنيف', youtubeId: 'aircAruvnKk' },
+                            { title: 'مشاريع تطبيقية بسيطة', youtubeId: 'K_D8YyJ2zGk' },
+                            { title: 'الشبكات العصبية والتعلم العميق', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                            { title: 'Natural Language Processing Basics', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                            { title: 'أساسيات رؤية الكمبيوتر', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                            { title: 'اعتبارات الذكاء الاصطناعي الأخلاقية', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' },
+                            { title: 'مقدمة للتعلم المعزز', youtubeId: 'videoseries?list=PL4cUxeGkcC9g-rYzJjH2T1H2G7T6L5C0' }
+                        ]
+                    }
+                ]
+            },
+            'fr': {
+                lang_code: 'fr',
+                lang_name: 'Français',
+                lang_dir: 'ltr',
+                lang_font: 'Inter', // Default to Inter for Latin-based
+                title: 'uxubook - Plateforme Éducative',
+                nav_courses: 'Cours',
+                nav_about: 'À Propos',
+                nav_contact: 'Contact',
+                hero_title: 'Maîtrisez la Programmation, Changez Votre Avenir',
+                hero_description: 'Découvrez une large gamme de cours interactifs, de leçons soigneusement conçues et de vidéos YouTube sélectionnées pour maîtriser les compétences en programmation.',
+                explore_courses_btn: 'Explorer les Cours Maintenant',
+                courses_listing_title: 'Nos Cours de Programmation',
+                search_placeholder: 'Rechercher un cours...',
+                all_levels: 'Tous Niveaux',
+                beginner: 'Débutant',
+                intermediate: 'Intermédiaire',
+                advanced: 'Avancé',
+                all_categories: 'Toutes Catégories',
+                web_dev: 'Développement Web',
+                mobile_dev: 'Développement Mobile',
+                data_science: 'Science des Données',
+                ai: 'Intelligence Artificielle',
+                no_results: 'Aucun résultat correspondant.',
+                back_to_courses: 'Retour aux Cours',
+                level: 'Niveau',
+                duration: 'Durée',
+                videos: 'Vidéos',
+                instructor: 'Instructeur',
+                course_content: 'Contenu du Cours',
+                view_course: 'Voir le Cours',
+                footer_text_prefix: '&copy; 2024 ', 
+                footer_text_suffix: '. Tous droits réservés.', 
+                chat_assistant_name: 'Assistant IA uxubook',
+                chat_input_placeholder: 'Tapez votre message...',
+                chat_about_us_ai_response: 'uxubook est une plateforme éducative dédiée à vous aider à maîtriser les compétences en programmation grâce à des cours interactifs et des vidéos YouTube sélectionnées. Notre objectif est de rendre l\'apprentissage accessible et engageant.',
+                chat_contact_ai_response: 'Vous pouvez nous contacter par e-mail à support@uxubook.com ou visiter notre page Contact pour plus d\'options.',
+                privacy_policy: 'Politique de Confidentialité',
+                terms_of_service: 'Conditions d\'Utilisation',
+                sidebar_lessons_title: 'Leçons du Cours',
+                about_us_title: 'À Propos de Nous',
+                about_us_content_p1: 'Bienvenue sur uxubook, votre destination privilégiée pour maîtriser les compétences en programmation. Nous croyons que le codage est un super-pouvoir qui peut transformer des vies et des carrières. Notre plateforme est dédiée à fournir un contenu éducatif de haute qualité, accessible et engageant pour les apprenants de tous niveaux.',
+                about_us_content_p2: 'Notre mission est d\'autonomiser les individus du monde entier avec les connaissances et les outils dont ils ont besoin pour réussir dans l\'industrie technologique en évolution rapide. Nous proposons une gamme variée de cours, des bases du développement web à l\'intelligence artificielle avancée, tous enseignés par des instructeurs expérimentés. Rejoignez notre communauté et lancez-vous dans votre parcours d\'apprentissage avec uxubook dès aujourd\'hui !',
+                contact_us_title: 'Nous Contacter',
+                contact_us_content_p1: 'Nous serions ravis de vous entendre ! Que vous ayez des questions sur nos cours, besoin d\'un support technique ou que vous souhaitiez simplement nous faire part de vos commentaires, notre équipe est là pour vous aider.',
+                contact_us_email: 'Email',
+                contact_us_phone: 'Téléphone',
+                contact_us_address: 'Adresse',
+                contact_us_business_hours: 'Heures d\'Ouverture',
+                testimonials_title: 'Ce que disent nos Étudiants',
+                testimonials: [
+                    {
+                        name: 'Sarah M.',
+                        experience: 'J\'ai commencé sans aucune expérience en codage, et maintenant je construis mes propres applications web ! uxubook a rendu l\'apprentissage amusant et facile à comprendre.',
+                        imageUrl: 'https://placehold.co/96x96/ADD8E6/000?text=Sarah' 
+                    },
+                    {
+                        name: 'Ahmed K.',
+                        experience: 'Le cours de science des données était incroyablement détaillé et pratique. Il m\'a aidé à décrocher le poste de mes rêves en tant qu\'analyste de données.',
+                        imageUrl: 'https://placehold.co/96x96/90EE90/000?text=Ahmed'
+                    },
+                    {
+                        name: 'Maria L.',
+                        experience: 'En tant que professionnelle très occupée, les leçons flexibles m\'ont permis d\'apprendre à mon propre rythme. Je recommande vivement uxubook pour le développement mobile !',
+                        imageUrl: 'https://placehold.co/96x96/FFB6C1/000?text=Maria'
+                    }
+                ],
+                // Courses data is copied and prefixed for French
+                courses: baseEnglishCourses.map(course => ({
+                    ...course,
+                    title: `[FR] ${course.title}`, 
+                    description: `[FR] ${course.description}`,
+                    lessons: course.lessons.map(lesson => ({
+                        ...lesson,
+                        title: `[FR] ${lesson.title}`
+                    }))
+                }))
+            },
+            'es': {
+                lang_code: 'es',
+                lang_name: 'Español',
+                lang_dir: 'ltr',
+                lang_font: 'Inter',
+                title: 'uxubook - Plataforma Educativa',
+                nav_courses: 'Cursos',
+                nav_about: 'Acerca de Nosotros',
+                nav_contact: 'Contacto',
+                hero_title: 'Domina la Programación, Cambia Tu Futuro',
+                hero_description: 'Descubre una amplia gama de cursos interactivos, lecciones cuidadosamente diseñadas y videos de YouTube seleccionados para dominar las habilidades de programación.',
+                explore_courses_btn: 'Explorar Cursos Ahora',
+                courses_listing_title: 'Nuestros Cursos de Programación',
+                search_placeholder: 'Buscar un curso...',
+                all_levels: 'Todos los Niveles',
+                beginner: 'Principiante',
+                intermediate: 'Intermedio',
+                advanced: 'Avanzado',
+                all_categories: 'Todas las Categorías',
+                web_dev: 'Desarrollo Web',
+                mobile_dev: 'Desarrollo Móvil',
+                data_science: 'Ciencia de Datos',
+                ai: 'Inteligencia Artificial',
+                no_results: 'No hay resultados coincidentes.',
+                back_to_courses: 'Volver a Cursos',
+                level: 'Nivel',
+                duration: 'Duración',
+                videos: 'Videos',
+                instructor: 'Instructor',
+                course_content: 'Contenido del Curso',
+                view_course: 'Ver Curso',
+                footer_text_prefix: '&copy; 2024 ', 
+                footer_text_suffix: '. Todos los derechos reservados.', 
+                chat_assistant_name: 'Asistente de IA de uxubook',
+                chat_input_placeholder: 'Escribe tu mensaje...',
+                chat_about_us_ai_response: 'uxubook es una plataforma educativa dedicada a ayudarte a dominar las habilidades de programación a través de cursos interactivos y videos de YouTube seleccionados. Nuestro objetivo es hacer que el aprendizaje sea accesible y atractivo.',
+                chat_contact_ai_response: 'Puedes contactarnos por correo electrónico en support@uxubook.com o visitar nuestra página de Contacto para más opciones.',
+                privacy_policy: 'Política de Privacidad',
+                terms_of_service: 'Términos de Servicio',
+                sidebar_lessons_title: 'Lecciones del Curso',
+                about_us_title: 'Acerca de Nosotros',
+                about_us_content_p1: 'Bienvenido a uxubook, tu destino principal para dominar las habilidades de programación. Creemos que la codificación es un superpoder que puede transformar vidas y carreras. Nuestra plataforma se dedica a proporcionar contenido educativo de alta calidad, accesible y atractivo para estudiantes de todos los niveles.',
+                about_us_content_p2: 'Nuestra misión es empoderar a individuos de todo el mundo con el conocimiento y las herramientas que necesitan para tener éxito en la industria tecnológica en rápida evolución. Ofrecemos una amplia gama de cursos, desde los fundamentos del desarrollo web hasta la inteligencia artificial avanzada, todos impartidos por instructores experimentados. ¡Únete a nuestra comunidad y emprende tu viaje de aprendizaje con uxubook hoy!',
+                contact_us_title: 'Contáctanos',
+                contact_us_content_p1: '¡Nos encantaría saber de ti! Ya sea que tengas preguntas sobre nuestros cursos, necesites soporte técnico o simplemente quieras enviarnos tus comentarios, nuestro equipo está aquí para ayudarte.',
+                contact_us_email: 'Correo Electrónico',
+                contact_us_phone: 'Teléfono',
+                contact_us_address: 'Dirección',
+                contact_us_business_hours: 'Horario Comercial',
+                testimonials_title: 'Lo que Dicen Nuestros Estudiantes',
+                testimonials: [
+                    {
+                        name: 'Sarah M.',
+                        experience: 'Empecé sin experiencia en codificación, ¡y ahora estoy construyendo mis propias aplicaciones web! uxubook hizo que el aprendizaje fuera divertido y fácil de entender.',
+                        imageUrl: 'https://placehold.co/96x96/ADD8E6/000?text=Sarah' 
+                    },
+                    {
+                        name: 'Ahmed K.',
+                        experience: 'El curso de ciencia de datos fue increíblemente detallado y práctico. Me ayudó a conseguir el trabajo de mis sueños como analista de datos.',
+                        imageUrl: 'https://placehold.co/96x96/90EE90/000?text=Ahmed'
+                    },
+                    {
+                        name: 'Maria L.',
+                        experience: 'Como profesional ocupada, las lecciones flexibles me permitieron aprender a mi propio ritmo. ¡Recomiendo encarecidamente uxubook para el desarrollo móvil!',
+                        imageUrl: 'https://placehold.co/96x96/FFB6C1/000?text=Maria'
+                    }
+                ],
+                courses: baseEnglishCourses.map(course => ({
+                    ...course,
+                    title: `[ES] ${course.title}`,
+                    description: `[ES] ${course.description}`,
+                    lessons: course.lessons.map(lesson => ({
+                        ...lesson,
+                        title: `[ES] ${lesson.title}`
+                    }))
+                }))
+            },
+            'zh-CN': {
+                lang_code: 'zh-CN',
+                lang_name: '简体中文',
+                lang_dir: 'ltr',
+                lang_font: 'sans-serif', // Generic font for Chinese
+                title: 'uxubook - 教育平台',
+                nav_courses: '课程',
+                nav_about: '关于我们',
+                nav_contact: '联系我们',
+                hero_title: '掌握编程，改变你的未来',
+                hero_description: '探索各种互动课程、精心设计的课程和精选的YouTube视频，掌握编程技能。',
+                explore_courses_btn: '立即探索课程',
+                courses_listing_title: '我们的编程课程',
+                search_placeholder: '搜索课程...',
+                all_levels: '所有级别',
+                beginner: '初级',
+                intermediate: '中级',
+                advanced: '高级',
+                all_categories: '所有类别',
+                web_dev: 'Web开发',
+                mobile_dev: '移动开发',
+                data_science: '数据科学',
+                ai: '人工智能',
+                no_results: '没有匹配的结果。',
+                back_to_courses: '返回课程',
+                level: '级别',
+                duration: '持续时间',
+                videos: '视频',
+                instructor: '讲师',
+                course_content: '课程内容',
+                view_course: '查看课程',
+                footer_text_prefix: '&copy; 2024 ', 
+                footer_text_suffix: '. 版权所有。', 
+                chat_assistant_name: 'uxubook AI 助手',
+                chat_input_placeholder: '输入您的消息...',
+                chat_about_us_ai_response: 'uxubook是一个教育平台，致力于通过互动课程和精选的YouTube视频帮助您掌握编程技能。我们的目标是让学习变得易于访问和参与。',
+                chat_contact_ai_response: '您可以通过电子邮件support@uxubook.com与我们联系，或访问我们的联系页面获取更多选项。',
+                privacy_policy: '隐私政策',
+                terms_of_service: '服务条款',
+                sidebar_lessons_title: '课程章节',
+                about_us_title: '关于我们',
+                about_us_content_p1: '欢迎来到 uxubook，您掌握编程技能的首选目的地。我们相信编码是一种可以改变生活和职业的超能力。我们的平台致力于为所有级别的学习者提供高质量、易于访问且引人入胜的教育内容。',
+                about_us_content_p2: '我们的使命是为全球个人提供在快速发展的科技行业中取得成功所需的知识和工具。我们提供各种各样的课程，从Web开发基础到高级人工智能，所有课程均由经验丰富的讲师授课。立即加入我们的社区，与 uxubook 一起开始您的学习之旅！',
+                contact_us_title: '联系我们',
+                contact_us_content_p1: '我们很高兴收到您的来信！无论您对我们的课程有疑问、需要技术支持，还是只想提供反馈，我们的团队都会为您提供帮助。',
+                contact_us_email: '电子邮件',
+                contact_us_phone: '电话',
+                contact_us_address: '地址',
+                contact_us_business_hours: '营业时间',
+                testimonials_title: '学生评价',
+                testimonials: [
+                    {
+                        name: 'Sarah M.',
+                        experience: '我从零编码经验开始，现在我正在构建自己的Web应用程序！uxubook让学习变得有趣且易于理解。',
+                        imageUrl: 'https://placehold.co/96x96/ADD8E6/000?text=Sarah' 
+                    },
+                    {
+                        name: 'Ahmed K.',
+                        experience: '数据科学课程非常详细和实用。它帮助我找到了梦想中的数据分析师工作。',
+                        imageUrl: 'https://placehold.co/96x96/90EE90/000?text=Ahmed'
+                    },
+                    {
+                        name: 'Maria L.',
+                        experience: '作为一名忙碌的专业人士，灵活的课程让我能够按照自己的节奏学习。强烈推荐 uxubook 进行移动开发！',
+                        imageUrl: 'https://placehold.co/96x96/FFB6C1/000?text=Maria'
+                    }
+                ],
+                courses: baseEnglishCourses.map(course => ({
+                    ...course,
+                    title: `[ZH] ${course.title}`,
+                    description: `[ZH] ${course.description}`,
+                    lessons: course.lessons.map(lesson => ({
+                        ...lesson,
+                        title: `[ZH] ${lesson.title}`
+                    }))
+                }))
+            },
+            'hi': {
+                lang_code: 'hi',
+                lang_name: 'हिन्दी',
+                lang_dir: 'ltr',
+                lang_font: 'sans-serif', // Generic font for Hindi
+                title: 'uxubook - शैक्षिक मंच',
+                nav_courses: 'पाठ्यक्रम',
+                nav_about: 'हमारे बारे में',
+                nav_contact: 'संपर्क करें',
+                hero_title: 'प्रोग्रामिंग में महारत हासिल करें, अपना भविष्य बदलें',
+                hero_description: 'प्रोग्रामिंग कौशल में महारत हासिल करने के लिए इंटरैक्टिव पाठ्यक्रमों, सावधानीपूर्वक डिज़ाइन किए गए पाठों और क्यूरेटेड YouTube वीडियो की एक विस्तृत श्रृंखला खोजें।',
+                explore_courses_btn: 'अभी पाठ्यक्रम खोजें',
+                courses_listing_title: 'हमारे प्रोग्रामिंग पाठ्यक्रम',
+                search_placeholder: 'पाठ्यक्रम खोजें...',
+                all_levels: 'सभी स्तर',
+                beginner: 'शुरुआती',
+                intermediate: 'मध्यवर्ती',
+                advanced: 'उन्नत',
+                all_categories: 'सभी श्रेणियाँ',
+                web_dev: 'वेब विकास',
+                mobile_dev: 'मोबाइल विकास',
+                data_science: 'डेटा विज्ञान',
+                ai: 'कृत्रिम बुद्धि',
+                no_results: 'कोई मिलान परिणाम नहीं।',
+                back_to_courses: 'पाठ्यक्रमों पर वापस',
+                level: 'स्तर',
+                duration: 'अवधि',
+                videos: 'वीडियो',
+                instructor: 'प्रशिक्षक',
+                course_content: 'पाठ्यक्रम सामग्री',
+                view_course: 'पाठ्यक्रम देखें',
+                footer_text_prefix: '&copy; 2024 ', 
+                footer_text_suffix: '. सभी अधिकार सुरक्षित।', 
+                chat_assistant_name: 'uxubook एआई सहायक',
+                chat_input_placeholder: 'अपना संदेश टाइप करें...',
+                chat_about_us_ai_response: 'uxubook एक शैक्षिक मंच है जो आपको इंटरैक्टिव पाठ्यक्रमों और क्यूरेटेड YouTube वीडियो के माध्यम से प्रोग्रामिंग कौशल में महारत हासिल करने में मदद करने के लिए समर्पित है। हमारा लक्ष्य सीखने को सुलभ और आकर्षक बनाना है।',
+                chat_contact_ai_response: 'आप हमें support@uxubook.com पर ईमेल के माध्यम से संपर्क कर सकते हैं या अधिक विकल्पों के लिए हमारे संपर्क पृष्ठ पर जा सकते हैं।',
+                privacy_policy: 'गोपनीयता नीति',
+                terms_of_service: 'सेवा की शर्तें',
+                sidebar_lessons_title: 'पाठ्यक्रम के पाठ',
+                about_us_title: 'हमारे बारे में',
+                about_us_content_p1: 'uxubook में आपका स्वागत है, प्रोग्रामिंग कौशल में महारत हासिल करने के लिए आपका प्रमुख गंतव्य। हम मानते हैं कि कोडिंग एक महाशक्ति है जो जीवन और करियर को बदल सकती है। हमारा मंच सभी स्तरों के शिक्षार्थियों के लिए उच्च-गुणवत्ता, सुलभ और आकर्षक शैक्षिक सामग्री प्रदान करने के लिए समर्पित है।',
+                about_us_content_p2: 'हमारा मिशन दुनिया भर के व्यक्तियों को तेजी से विकसित हो रहे तकनीकी उद्योग में सफल होने के लिए आवश्यक ज्ञान और उपकरणों के साथ सशक्त बनाना है। हम वेब विकास के मूल सिद्धांतों से लेकर उन्नत कृत्रिम बुद्धिमत्ता तक، अनुभवी प्रशिक्षकों द्वारा पढ़ाए जाने वाले विभिन्न प्रकार के पाठ्यक्रम प्रदान करते हैं। हमारे समुदाय में शामिल हों और आज ही uxubook के साथ अपनी सीखने की यात्रा शुरू करें!',
+                contact_us_title: 'हमसे संपर्क करें',
+                contact_us_content_p1: 'हमें आपसे सुनकर खुशी होगी! चाहे आपके पास हमारे पाठ्यक्रमों के बारे में प्रश्न हों, तकनीकी सहायता की आवश्यकता हो, या बस प्रतिक्रिया देना चाहते हों, हमारी टीम मदद के लिए यहाँ है।',
+                contact_us_email: 'ईमेल',
+                contact_us_phone: 'फ़ोन',
+                contact_us_address: 'पता',
+                contact_us_business_hours: 'व्यवसाय के घंटे',
+                testimonials_title: 'हमारे छात्र क्या कहते हैं',
+                testimonials: [
+                    {
+                        name: 'Sarah M.',
+                        experience: 'मैंने शून्य कोडिंग अनुभव के साथ शुरुआत की, और अब मैं अपने स्वयं के वेब एप्लिकेशन बना रहा हूँ! uxubook ने सीखने को मजेदार और समझने में आसान बना दिया।',
+                        imageUrl: 'https://placehold.co/96x96/ADD8E6/000?text=Sarah' 
+                    },
+                    {
+                        name: 'Ahmed K.',
+                        experience: 'डेटा साइंस कोर्स अविश्वसनीय रूप से विस्तृत और व्यावहारिक था। इसने मुझे डेटा विश्लेषक के रूप में अपनी सपनों की नौकरी पाने में मदद की।',
+                        imageUrl: 'https://placehold.co/96x96/90EE90/000?text=Ahmed'
+                    },
+                    {
+                        name: 'Maria L.',
+                        experience: 'एक व्यस्त पेशेवर के रूप में, लचीले पाठों ने मुझे अपनी गति से सीखने की अनुमति दी। मोबाइल विकास के लिए uxubook की अत्यधिक अनुशंसा करता हूँ!',
+                        imageUrl: 'https://placehold.co/96x96/FFB6C1/000?text=Maria'
+                    }
+                ],
+                courses: baseEnglishCourses.map(course => ({
+                    ...course,
+                    title: `[HI] ${course.title}`,
+                    description: `[HI] ${course.description}`,
+                    lessons: course.lessons.map(lesson => ({
+                        ...lesson,
+                        title: `[HI] ${lesson.title}`
+                    }))
+                }))
+            },
+            'de': {
+                lang_code: 'de',
+                lang_name: 'Deutsch',
+                lang_dir: 'ltr',
+                lang_font: 'Inter',
+                title: 'uxubook - Bildungsplattform',
+                nav_courses: 'Kurse',
+                nav_about: 'Über uns',
+                nav_contact: 'Kontakt',
+                hero_title: 'Programmierung meistern, Zukunft gestalten',
+                hero_description: 'Entdecken Sie eine breite Palette interaktiver Kurse, sorgfältig gestalteter Lektionen und kuratierter YouTube-Videos, um Programmierkenntnisse zu meistern.',
+                explore_courses_btn: 'Jetzt Kurse erkunden',
+                courses_listing_title: 'Unsere Programmierkurse',
+                search_placeholder: 'Kurs suchen...',
+                all_levels: 'Alle Schwierigkeitsgrade',
+                beginner: 'Anfänger',
+                intermediate: 'Fortgeschrittene',
+                advanced: 'Experten',
+                all_categories: 'Alle Kategorien',
+                web_dev: 'Webentwicklung',
+                mobile_dev: 'Mobile Entwicklung',
+                data_science: 'Datenwissenschaft',
+                ai: 'Künstliche Intelligenz',
+                no_results: 'Keine passenden Ergebnisse.',
+                back_to_courses: 'Zurück zu den Kursen',
+                level: 'Schwierigkeitsgrad',
+                duration: 'Dauer',
+                videos: 'Videos',
+                instructor: 'Dozent',
+                course_content: 'Kursinhalt',
+                view_course: 'Kurs ansehen',
+                footer_text_prefix: '&copy; 2024 ',
+                footer_text_suffix: '. Alle Rechte vorbehalten.',
+                chat_assistant_name: 'uxubook KI-Assistent',
+                chat_input_placeholder: 'Nachricht eingeben...',
+                chat_about_us_ai_response: 'uxubook ist eine Bildungsplattform, die Ihnen hilft, Programmierkenntnisse durch interaktive Kurse und kuratierte YouTube-Videos zu meistern. Unser Ziel ist es, das Lernen zugänglich und ansprechend zu gestalten.',
+                chat_contact_ai_response: 'Sie können uns per E-Mail unter support@uxubook.com kontaktieren oder unsere Kontaktseite für weitere Optionen besuchen.',
+                privacy_policy: 'Datenschutzrichtlinie',
+                terms_of_service: 'Nutzungsbedingungen',
+                sidebar_lessons_title: 'Kurslektionen',
+                about_us_title: 'Über uns',
+                about_us_content_p1: 'Willkommen bei uxubook, Ihrer ersten Anlaufstelle für die Beherrschung von Programmierkenntnissen. Wir glauben, dass Codieren eine Superkraft ist, die Leben und Karrieren verändern kann. Unsere Plattform widmet sich der Bereitstellung hochwertiger, zugänglicher und ansprechender Bildungsinhalte für Lernende aller Niveaus.',
+                about_us_content_p2: 'Unsere Mission ist es, Einzelpersonen weltweit mit dem Wissen und den Werkzeugen auszustatten, die sie benötigen, um in der sich schnell entwickelnden Technologiebranche erfolgreich zu sein. Wir bieten eine vielfältige Auswahl an Kursen, von den Grundlagen der Webentwicklung bis zur fortgeschrittenen künstlichen Intelligenz, die alle von erfahrenen Dozenten unterrichtet werden. Treten Sie unserer Community bei und beginnen Sie noch heute Ihre Lernreise mit uxubook!',
+                contact_us_title: 'Kontakt',
+                contact_us_content_p1: 'Wir freuen uns darauf, von Ihnen zu hören! Egal, ob Sie Fragen zu unseren Kursen haben, technischen Support benötigen oder einfach nur Feedback geben möchten, unser Team ist für Sie da.',
+                contact_us_email: 'E-Mail',
+                contact_us_phone: 'Telefon',
+                contact_us_address: 'Adresse',
+                contact_us_business_hours: 'Geschäftszeiten',
+                testimonials_title: 'Was unsere Studenten sagen',
+                testimonials: [
+                    {
+                        name: 'Sarah M.',
+                        experience: 'Ich begann ohne Programmierkenntnisse, und jetzt baue ich meine eigenen Webanwendungen! uxubook hat das Lernen unterhaltsam und leicht verständlich gemacht.',
+                        imageUrl: 'https://placehold.co/96x96/ADD8E6/000?text=Sarah'
+                    },
+                    {
+                        name: 'Ahmed K.',
+                        experience: 'Der Datenwissenschaftskurs war unglaublich detailliert und praktisch. Er half mir, meinen Traumjob als Datenanalyst zu bekommen.',
+                        imageUrl: 'https://placehold.co/96x96/90EE90/000?text=Ahmed'
+                    },
+                    {
+                        name: 'Maria L.',
+                        experience: 'Als eine vielbeschäftigte Fachkraft ermöglichten mir die flexiblen Lektionen, in meinem eigenen Tempo zu lernen. uxubook für die mobile Entwicklung kann ich wärmstens empfehlen!',
+                        imageUrl: 'https://placehold.co/96x96/FFB6C1/000?text=Maria'
+                    }
+                ],
+                courses: baseEnglishCourses.map(course => ({
+                    ...course,
+                    title: `[DE] ${course.title}`,
+                    description: `[DE] ${course.description}`,
+                    lessons: course.lessons.map(lesson => ({
+                        ...lesson,
+                        title: `[DE] ${lesson.title}`
+                    }))
+                }))
+            },
+            'it': {
+                lang_code: 'it',
+                lang_name: 'Italiano',
+                lang_dir: 'ltr',
+                lang_font: 'Inter',
+                title: 'uxubook - Piattaforma Educativa',
+                nav_courses: 'Corsi',
+                nav_about: 'Chi Siamo',
+                nav_contact: 'Contatti',
+                hero_title: 'Domina la Programmazione, Cambia il Tuo Futuro',
+                hero_description: 'Scopri una vasta gamma di corsi interattivi, lezioni accuratamente progettate e video YouTube selezionati per padroneggiare le competenze di programmazione.',
+                explore_courses_btn: 'Esplora i Corsi Ora',
+                courses_listing_title: 'I Nostri Corsi di Programmazione',
+                search_placeholder: 'Cerca un corso...',
+                all_levels: 'Tutti i Livelli',
+                beginner: 'Principiante',
+                intermediate: 'Intermedio',
+                advanced: 'Avanzato',
+                all_categories: 'Tutte le Categorie',
+                web_dev: 'Sviluppo Web',
+                mobile_dev: 'Sviluppo Mobile',
+                data_science: 'Scienza dei Dati',
+                ai: 'Intelligenza Artificiale',
+                no_results: 'Nessun risultato corrispondente.',
+                back_to_courses: 'Torna ai Corsi',
+                level: 'Livello',
+                duration: 'Durata',
+                videos: 'Video',
+                instructor: 'Istruttore',
+                course_content: 'Contenuto del Corso',
+                view_course: 'Vedi Corso',
+                footer_text_prefix: '&copy; 2024 ',
+                footer_text_suffix: '. Tutti i diritti riservati.',
+                chat_assistant_name: 'Assistente AI uxubook',
+                chat_input_placeholder: 'Scrivi il tuo messaggio...',
+                chat_about_us_ai_response: 'uxubook è una piattaforma educativa dedicata ad aiutarti a padroneggiare le competenze di programmazione attraverso corsi interattivi e video YouTube selezionati. Il nostro obiettivo è rendere l\'apprendimento accessibile e coinvolgente.',
+                chat_contact_ai_response: 'Puoi contattarci via email a support@uxubook.com o visitare la nostra pagina Contatti per maggiori opzioni.',
+                privacy_policy: 'Informativa sulla Privacy',
+                terms_of_service: 'Termini di Servizio',
+                sidebar_lessons_title: 'Lezioni del Corso',
+                about_us_title: 'Chi Siamo',
+                about_us_content_p1: 'Benvenuti su uxubook, la vostra destinazione principale per padroneggiare le competenze di programmazione. Crediamo che la programmazione sia un superpotere in grado di trasformare vite e carriere. La nostra piattaforma è dedicata a fornire contenuti educativi di alta qualità, accessibili e coinvolgenti per studenti di tutti i livelli.',
+                about_us_content_p2: 'La nostra missione è quella di fornire agli individui di tutto il mondo le conoscenze e gli strumenti di cui hanno bisogno per avere successo nel settore tecnologico in rapida evoluzione. Offriamo una vasta gamma di corsi, dalle basi dello sviluppo web all\'intelligenza artificiale avanzata, tutti tenuti da istruttori esperti. Unisciti alla nostra comunità e inizia oggi stesso il tuo percorso di apprendimento con uxubook!',
+                contact_us_title: 'Contattaci',
+                contact_us_content_p1: 'Ci piacerebbe sentire la tua opinione! Se hai domande sui nostri corsi, hai bisogno di supporto tecnico o vuoi semplicemente fornirci un feedback, il nostro team è qui per aiutarti.',
+                contact_us_email: 'Email',
+                contact_us_phone: 'Telefono',
+                contact_us_address: 'Indirizzo',
+                contact_us_business_hours: 'Orari di Apertura',
+                testimonials_title: 'Cosa dicono i nostri studenti',
+                testimonials: [
+                    {
+                        name: 'Sarah M.',
+                        experience: 'Ho iniziato senza alcuna esperienza di programmazione, e ora sto costruendo le mie applicazioni web! uxubook ha reso l\'apprendimento divertente e facile da capire.',
+                        imageUrl: 'https://placehold.co/96x96/ADD8E6/000?text=Sarah'
+                    },
+                    {
+                        name: 'Ahmed K.',
+                        experience: 'Il corso di data science è stato incredibilmente dettagliato e pratico. Mi ha aiutato a trovare il lavoro dei miei sogni come analista di dati.',
+                        imageUrl: 'https://placehold.co/96x96/90EE90/000?text=Ahmed'
+                    },
+                    {
+                        name: 'Maria L.',
+                        experience: 'Come professionista impegnata, le lezioni flessibili mi hanno permesso di imparare al mio ritmo. Consiglio vivamente uxubook per lo sviluppo mobile!',
+                        imageUrl: 'https://placehold.co/96x96/FFB6C1/000?text=Maria'
+                    }
+                ],
+                courses: baseEnglishCourses.map(course => ({
+                    ...course,
+                    title: `[IT] ${course.title}`,
+                    description: `[IT] ${course.description}`,
+                    lessons: course.lessons.map(lesson => ({
+                        ...lesson,
+                        title: `[IT] ${lesson.title}`
+                    }))
+                }))
+            },
+            'ja': {
+                lang_code: 'ja',
+                lang_name: '日本語',
+                lang_dir: 'ltr',
+                lang_font: 'sans-serif', // Generic font for Japanese
+                title: 'uxubook - 教育プラットフォーム',
+                nav_courses: 'コース',
+                nav_about: '私たちについて',
+                nav_contact: 'お問い合わせ',
+                hero_title: 'プログラミングを習得し、未来を変えよう',
+                hero_description: 'プログラミングスキルを習得するための、幅広いインタラクティブなコース、綿密に設計されたレッスン、厳選されたYouTube動画をご覧ください。',
+                explore_courses_btn: '今すぐコースを探索',
+                courses_listing_title: '私たちのプログラミングコース',
+                search_placeholder: 'コースを検索...',
+                all_levels: 'すべてのレベル',
+                beginner: '初心者',
+                intermediate: '中級者',
+                advanced: '上級者',
+                all_categories: 'すべてのカテゴリ',
+                web_dev: 'Web開発',
+                mobile_dev: 'モバイル開発',
+                data_science: 'データサイエンス',
+                ai: '人工知能',
+                no_results: '一致する結果はありません。',
+                back_to_courses: 'コースに戻る',
+                level: 'レベル',
+                duration: '期間',
+                videos: 'ビデオ',
+                instructor: 'インストラクター',
+                course_content: 'コース内容',
+                view_course: 'コースを見る',
+                footer_text_prefix: '&copy; 2024 ',
+                footer_text_suffix: '. 無断複写・転載を禁じます。',
+                chat_assistant_name: 'uxubook AIアシスタント',
+                chat_input_placeholder: 'メッセージを入力...',
+                chat_about_us_ai_response: 'uxubookは、インタラクティブなコースと厳選されたYouTube動画を通じてプログラミングスキルを習得するお手伝いをする教育プラットフォームです。私たちの目標は、学習を身近で魅力的なものにすることです。',
+                chat_contact_ai_response: 'support@uxubook.com宛にメールでご連絡いただくか、お問い合わせページをご覧ください。',
+                privacy_policy: 'プライバシーポリシー',
+                terms_of_service: '利用規約',
+                sidebar_lessons_title: 'コースレッスン',
+                about_us_title: '私たちについて',
+                about_us_content_p1: 'プログラミングスキルを習得するための最高の目的地、uxubookへようこそ。私たちは、コーディングが人生とキャリアを変えることができる超能力だと信じています。当社のプラットフォームは、あらゆるレベルの学習者に高品質でアクセスしやすく、魅力的な教育コンテンツを提供することに専念しています。',
+                about_us_content_p2: '私たちの使命は、急速に進化するテクノロジー業界で成功するために必要な知識とツールを世界中の個人に提供することです。Web開発の基礎から高度な人工知能まで、経験豊富なインストラクターが教える多様なコースを提供しています。今日からuxubookで学習の旅を始めましょう！',
+                contact_us_title: 'お問い合わせ',
+                contact_us_content_p1: '皆様からのご連絡をお待ちしております！コースに関するご質問、技術サポート、または単にフィードバックをご希望の場合は、当社のチームがお手伝いいたします。',
+                contact_us_email: 'メール',
+                contact_us_phone: '電話',
+                contact_us_address: '住所',
+                contact_us_business_hours: '営業時間',
+                testimonials_title: '生徒の声',
+                testimonials: [
+                    {
+                        name: 'Sarah M.',
+                        experience: 'プログラミング経験ゼロから始めましたが、今では自分のWebアプリケーションを構築しています！uxubookのおかげで、楽しく簡単に学習できました。',
+                        imageUrl: 'https://placehold.co/96x96/ADD8E6/000?text=Sarah'
+                    },
+                    {
+                        name: 'Ahmed K.',
+                        experience: 'データサイエンスコースは信じられないほど詳細で実用的でした。データアナリストとしての夢の仕事に就くのに役立ちました。',
+                        imageUrl: 'https://placehold.co/96x96/90EE90/000?text=Ahmed'
+                    },
+                    {
+                        name: 'Maria L.',
+                        experience: '忙しいプロフェッショナルとして、柔軟なレッスンのおかげで自分のペースで学習できました。モバイル開発にはuxubookを強くお勧めします！',
+                        imageUrl: 'https://placehold.co/96x96/FFB6C1/000?text=Maria'
+                    }
+                ],
+                courses: baseEnglishCourses.map(course => ({
+                    ...course,
+                    title: `[JA] ${course.title}`,
+                    description: `[JA] ${course.description}`,
+                    lessons: course.lessons.map(lesson => ({
+                        ...lesson,
+                        title: `[JA] ${lesson.title}`
+                    }))
+                }))
+            }
+        };
+
+        var currentLang = 'en'; // Default language
+        var currentCourses; 
+
+        // Get DOM elements
+        const htmlElement = document.documentElement;
+        const bodyElement = document.body;
+        const pageTitle = document.querySelector('title');
+        const homeLink = document.getElementById('home-link');
+        const navCourses = document.getElementById('nav-courses');
+        const navAbout = document.getElementById('nav-about');
+        const navContact = document.getElementById('nav-contact');
+        const heroSection = document.getElementById('hero-section');
+        const heroTitle = document.getElementById('hero-title');
+        const heroDescription = document.getElementById('hero-description');
+        const exploreCoursesBtn = document.getElementById('explore-courses-btn');
+        const coursesListingSection = document.getElementById('courses-listing');
+        const coursesListingTitle = document.getElementById('courses-listing-title');
+        const searchInput = document.getElementById('search-input');
+        const levelFilter = document.getElementById('level-filter');
+        const categoryFilter = document.getElementById('category-filter');
+        const noResultsMessage = document.getElementById('no-results');
+        const backToCoursesBtn = document.getElementById('back-to-courses');
+        const courseDetailsSection = document.getElementById('course-details');
+        const detailCourseTitle = document.getElementById('detail-course-title');
+        const detailCourseLevel = document.getElementById('detail-course-level');
+        const detailCourseDuration = document.getElementById('detail-course-duration');
+        const detailCourseVideos = document.getElementById('detail-course-videos');
+        const detailCourseInstructor = document.getElementById('detail-course-instructor');
+        const detailCourseDescription = document.getElementById('detail-course-description');
+        const courseContentTitle = document.getElementById('course-content-title');
+        const lessonList = document.getElementById('lesson-list'); // Main content lesson list
+        const footerText = document.getElementById('footer-text');
+        const privacyLink = document.getElementById('privacy-link');
+        const termsLink = document.getElementById('terms-link');
+        const languageSelect = document.getElementById('language-select'); 
+        const coursesGrid = document.getElementById('courses-grid');
+        const detailVideoPlayer = document.getElementById('detail-video-player');
+
+        // New sections and their elements
+        const aboutUsSection = document.getElementById('about-us-section');
+        const aboutUsTitle = document.getElementById('about-us-title');
+        const aboutUsContentP1 = document.getElementById('about-us-content-p1');
+        const aboutUsContentP2 = document.getElementById('about-us-content-p2');
+        const backFromAboutBtn = document.getElementById('back-from-about');
+
+        const contactUsSection = document.getElementById('contact-us-section');
+        const contactUsTitle = document.getElementById('contact-us-title');
+        const contactUsContentP1 = document.getElementById('contact-us-content-p1');
+        // Removed global const declarations for contact info strong tags
+        // Will get them directly in updateContent function for robustness
+
+        const backFromContactBtn = document.getElementById('back-from-contact');
+
+
+        // Message box elements
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+        const messageCloseBtn = document.getElementById('message-close-btn');
+
+        // Chat Assistant elements
+        const chatToggleButton = document.getElementById('chat-toggle-button');
+        const chatModal = document.getElementById('chat-modal');
+        const chatCloseBtn = document.getElementById('chat-close-btn');
+        const chatBody = document.getElementById('chat-body');
+        const chatInput = document.getElementById('chat-input');
+        const chatSendBtn = document.getElementById('chat-send-btn');
+        const chatAssistantName = document.getElementById('chat-assistant-name');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        // Sidebar elements (updated)
+        const sidebarToggleButton = document.getElementById('sidebar-toggle-button'); // New
+        const lessonsSidebar = document.getElementById('lessons-sidebar');
+        const sidebarCloseButton = document.getElementById('sidebar-close-button'); // New
+        const sidebarTitle = document.getElementById('sidebar-title');
+        const sidebarLessonList = document.getElementById('sidebar-lesson-list');
+        const sidebarOverlay = document.getElementById('sidebar-overlay'); // New
+
+        // Testimonial elements (new)
+        const testimonialsSection = document.getElementById('testimonials-section');
+        const testimonialsTitle = document.getElementById('testimonials-title');
+        const testimonialsGrid = document.getElementById('testimonials-grid');
+
+
+        // Chat History (for LLM interaction)
+        var chatHistory = []; // Initialize chat history for LLM
+
+        /**
+         * Populates the language select dropdown.
+         */
+        function populateLanguageSelect() {
+            languageSelect.innerHTML = '';
+            for (var langCode in translations) {
+                var option = document.createElement('option');
+                option.value = langCode;
+                option.textContent = translations[langCode].lang_name;
+                languageSelect.appendChild(option);
+            }
+            languageSelect.value = currentLang; // Set initial selection
+        }
+
+        /**
+         * Shows a custom message box.
+         * @param {string} message - The message to display.
+         */
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageBox.classList.remove('hidden');
+        }
+
+        // Close message box event listener
+        messageCloseBtn.addEventListener('click', () => {
+            messageBox.classList.add('hidden');
+        });
+
+        /**
+         * Adds a message to the chat body.
+         * @param {string} sender - 'user' or 'ai'.
+         * @param {string} message - The message content.
+         */
+        function addChatMessage(sender, message) {
+            var messageElement = document.createElement('div');
+            messageElement.className = `chat-message ${sender}`;
+            messageElement.innerHTML = `<div class="message-bubble">${message}</div>`;
+            chatBody.appendChild(messageElement);
+            chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll to bottom
+        }
+
+        /**
+         * Sends a message to the AI assistant.
+         */
+        async function sendMessageToAI() {
+            var userMessage = chatInput.value.trim();
+            if (userMessage === '') return;
+
+            addChatMessage('user', userMessage);
+            chatInput.value = ''; // Clear input
+            chatSendBtn.disabled = true; // Disable send button
+            loadingIndicator.classList.remove('hidden'); // Show loading indicator
+            chatBody.scrollTop = chatBody.scrollHeight; // Scroll to show loading
+
+            try {
+                // Determine prompt for LLM based on user input and pre-defined responses
+                var llmPrompt = userMessage;
+                var aiResponse = '';
+
+                var lowerCaseMessage = userMessage.toLowerCase();
+
+                if (lowerCaseMessage.includes(translations[currentLang].nav_about.toLowerCase()) || lowerCaseMessage.includes('about uxubook')) {
+                    aiResponse = translations[currentLang].chat_about_us_ai_response;
+                } else if (lowerCaseMessage.includes(translations[currentLang].nav_contact.toLowerCase()) || lowerCaseMessage.includes('contact us')) {
+                    aiResponse = translations[currentLang].chat_contact_ai_response;
+                } else {
+                    // Call Gemini API for general queries
+                    // Removed apiKey and apiUrl as no longer generating images
+                    var apiKey = ""; // Canvas will provide this at runtime, kept for potential future LLM use
+                    var apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    
+                    // Maintain chat history for context
+                    var currentChatHistory = [];
+                    currentChatHistory.push({ role: "user", parts: [{ text: llmPrompt }] });
+
+                    var payload = { contents: currentChatHistory };
+                    
+                    var response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) { // Check for HTTP errors (e.g., 404, 500)
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    var result = await response.json(); // This is where the SyntaxError typically occurs if response is bad
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        aiResponse = result.candidates[0].content.parts[0].text;
+                    } else {
+                        aiResponse = currentLang === 'en' ? "I'm sorry, I couldn't get a response at this moment. Please try again." : "عذراً، لم أتمكن من الحصول على رد في الوقت الحالي. يرجى المحاولة مرة أخرى.";
+                    }
+                }
+                addChatMessage('ai', aiResponse);
+
+            } catch (error) {
+                console.error('Error fetching AI response:', error);
+                addChatMessage('ai', currentLang === 'en' ? "An error occurred. Please try again later." : "حدث خطأ. يرجى المحاولة مرة أخرى لاحقًا.");
+            } finally {
+                loadingIndicator.classList.add('hidden'); // Hide loading indicator
+                chatSendBtn.disabled = false; // Re-enable send button
+                chatInput.focus(); // Focus input field
+            }
+        }
+
+        // Chat event listeners
+        chatToggleButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent document click from immediately closing it
+            chatModal.classList.toggle('hidden');
+            if (!chatModal.classList.contains('hidden')) {
+                chatInput.focus(); // Focus input when chat opens
+                chatBody.scrollTop = chatBody.scrollHeight; // Scroll to bottom
+            }
+        });
+
+        chatCloseBtn.addEventListener('click', () => {
+            chatModal.classList.add('hidden');
+        });
+
+        // Close chat modal when clicking outside of it
+        document.addEventListener('click', (event) => {
+            if (!chatModal.classList.contains('hidden') && !chatModal.contains(event.target) && !chatToggleButton.contains(event.target)) {
+                chatModal.classList.add('hidden');
+            }
+        });
+
+        chatSendBtn.addEventListener('click', sendMessageToAI);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessageToAI();
+            }
+        });
+
+        /**
+         * Hides all main content sections.
+         */
+        function hideAllSections() {
+            heroSection.style.display = 'none';
+            coursesListingSection.style.display = 'none';
+            courseDetailsSection.style.display = 'none';
+            aboutUsSection.style.display = 'none';
+            contactUsSection.style.display = 'none';
+            // Do NOT hide lessonsSidebar directly here, it's controlled by its own toggle
+            // instead, ensure it's closed if open
+            lessonsSidebar.classList.remove('open');
+            lessonsSidebar.classList.add('hidden');
+            sidebarOverlay.classList.remove('open');
+        }
+
+        /**
+         * Shows the About Us section and hides others.
+         */
+        function showAboutUsSection() {
+            hideAllSections();
+            aboutUsSection.style.display = 'block';
+            chatModal.classList.add('hidden'); // Close chat if open
+            chatBody.innerHTML = ''; // Clear chat history
+            chatHistory = [];
+        }
+
+        /**
+         * Shows the Contact Us section and hides others.
+         */
+        function showContactUsSection() {
+            hideAllSections();
+            contactUsSection.style.display = 'block';
+            chatModal.classList.add('hidden'); // Close chat if open
+            chatBody.innerHTML = ''; // Clear chat history
+            chatHistory = [];
+        }
+
+
+        /**
+         * Toggles the visibility of the lessons sidebar.
+         */
+        function toggleSidebar() {
+            const isHidden = lessonsSidebar.classList.contains('hidden');
+            if (isHidden) {
+                lessonsSidebar.classList.remove('hidden');
+                setTimeout(() => { // Allow reflow before applying transform
+                    lessonsSidebar.classList.add('open');
+                    sidebarOverlay.classList.add('open');
+                }, 10); // Small delay to ensure transition works
+            } else {
+                lessonsSidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('open');
+                setTimeout(() => { // Hide completely after transition
+                    lessonsSidebar.classList.add('hidden');
+                }, 300); // Match CSS transition duration
+            }
+            chatModal.classList.add('hidden'); // Close chat if sidebar opens
+        }
+
+
+        /**
+         * Updates all text content on the page based on the current language.
+         */
+        function updateContent() {
+            var langData = translations[currentLang];
+            
+            htmlElement.setAttribute('lang', langData.lang_code);
+            htmlElement.setAttribute('dir', langData.lang_dir);
+            bodyElement.style.fontFamily = `'${langData.lang_font}', sans-serif`;
+
+            pageTitle.textContent = langData.title;
+            navCourses.textContent = langData.nav_courses;
+            navAbout.textContent = langData.nav_about;
+            navContact.textContent = langData.nav_contact;
+            heroTitle.textContent = langData.hero_title;
+            heroDescription.textContent = langData.hero_description;
+            exploreCoursesBtn.textContent = langData.explore_courses_btn;
+            coursesListingTitle.textContent = langData.courses_listing_title;
+            searchInput.placeholder = langData.search_placeholder;
+            noResultsMessage.textContent = langData.no_results;
+
+            // Update back button text and icon direction
+            const updateBackButton = (button, textKey) => {
+                button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ${langData.lang_dir === 'ltr' ? 'mr-2' : 'ml-2'}" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="${langData.lang_dir === 'ltr' ? 'M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z' : 'M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z'}" clip-rule="evenodd" />
+                                            </svg>${langData[textKey]}`;
+            };
+
+            updateBackButton(backToCoursesBtn, 'back_to_courses');
+            updateBackButton(backFromAboutBtn, 'back_to_courses');
+            updateBackButton(backFromContactBtn, 'back_to_courses');
+
+
+            detailCourseLevel.previousElementSibling.textContent = langData.level + ':';
+            detailCourseDuration.previousElementSibling.textContent = langData.duration + ':';
+            detailCourseVideos.previousElementSibling.textContent = langData.videos + ':';
+            detailCourseInstructor.previousElementSibling.textContent = langData.instructor + ':';
+            courseContentTitle.textContent = langData.course_content;
+            
+            // Update footer text with the plain text uxubook
+            footerText.innerHTML = `
+                ${langData.footer_text_prefix}<span class="uxubook-logo-footer-plain">uxubook</span>${langData.footer_text_suffix}
+            `;
+
+            privacyLink.textContent = langData.privacy_policy;
+            termsLink.textContent = langData.terms_of_service;
+
+            // Update dropdown options
+            levelFilter.options[0].textContent = langData.all_levels;
+            levelFilter.options[1].textContent = langData.beginner;
+            levelFilter.options[2].textContent = langData.intermediate;
+            levelFilter.options[3].textContent = langData.advanced;
+
+            categoryFilter.options[0].textContent = langData.all_categories;
+            categoryFilter.options[1].textContent = langData.web_dev;
+            categoryFilter.options[2].textContent = langData.mobile_dev;
+            categoryFilter.options[3].textContent = langData.data_science;
+            categoryFilter.options[4].textContent = langData.ai;
+
+            // Update chat assistant texts
+            chatAssistantName.textContent = langData.chat_assistant_name;
+            chatInput.placeholder = langData.chat_input_placeholder;
+
+            // Update sidebar title
+            sidebarTitle.textContent = langData.sidebar_lessons_title;
+
+            // Update About Us section content
+            aboutUsTitle.textContent = langData.about_us_title;
+            aboutUsContentP1.textContent = langData.about_us_content_p1;
+            aboutUsContentP2.textContent = langData.about_us_content_p2;
+
+            // Update Contact Us section content dynamically
+            contactUsTitle.textContent = langData.contact_us_title;
+            contactUsContentP1.textContent = langData.contact_us_content_p1;
+
+            // Get elements directly within updateContent for robustness
+            const contactEmailLabel = document.getElementById('contact-email-label');
+            const contactPhoneLabel = document.getElementById('contact-phone-label');
+            const contactAddressLabel = document.getElementById('contact-address-label');
+            const contactHoursLabel = document.getElementById('contact-hours-label');
+
+            if (contactEmailLabel) contactEmailLabel.textContent = langData.contact_us_email + ':';
+            if (contactPhoneLabel) contactPhoneLabel.textContent = langData.contact_us_phone + ':';
+            if (contactAddressLabel) contactAddressLabel.textContent = langData.contact_us_address + ':';
+            if (contactHoursLabel) contactHoursLabel.textContent = langData.contact_us_business_hours + ':';
+
+            // Update testimonials section
+            testimonialsTitle.textContent = langData.testimonials_title;
+
+
+            // Update currentCourses data source and re-render the course listing if visible
+            currentCourses = langData.courses; // Ensure currentCourses is updated with new language data
+            if (coursesListingSection.style.display !== 'none') { // Check if currently visible
+                renderCourses(currentCourses);
+            }
+            // If on detail page, re-render its specific texts and sidebar
+            if (courseDetailsSection.style.display !== 'none') { // Check if currently visible
+                var currentCourseId = detailCourseTitle.dataset.currentCourseId; 
+                if (currentCourseId) {
+                    showCourseDetails(currentCourseId); // Re-render current details with updated language
+                }
+            }
+            // If hero section is visible, re-render testimonials with static images
+            if (heroSection.style.display !== 'none') {
+                renderTestimonials(langData.testimonials);
+            }
+        }
+
+        /**
+         * Renders testimonial cards in the hero section using predefined image URLs.
+         * @param {Array} testimonials - The array of testimonials to render.
+         */
+        async function renderTestimonials(testimonials) {
+            testimonialsGrid.innerHTML = ''; // Clear previous testimonials
+            for (const testimonial of testimonials) {
+                var testimonialCard = document.createElement('div');
+                testimonialCard.className = 'testimonial-card';
+                // Using image from testimonial.imageUrl directly
+                testimonialCard.innerHTML = `
+                    <img src="${testimonial.imageUrl}" alt="${currentLang === 'en' ? 'Profile picture of ' : 'صورة شخصية لـ '}${testimonial.name}" class="mb-4">
+                    <p class="text-gray-800 italic mb-4">"${testimonial.experience}"</p>
+                    <p class="font-semibold text-dark-text">- ${testimonial.name}</p>
+                `;
+                testimonialsGrid.appendChild(testimonialCard);
+
+                const imageElement = testimonialCard.querySelector('img');
+                
+                // Add onerror fallback for static images
+                imageElement.onerror = () => {
+                    imageElement.src = `https://placehold.co/96x96/FF0000/FFFFFF?text=Error`; // Red placeholder
+                    console.error('Failed to load static image for:', testimonial.name, 'from URL:', testimonial.imageUrl);
+                };
+            }
+        }
+
+
+        /**
+         * Shows the hero section and hides other sections.
+         */
+        function showHeroSection() {
+            hideAllSections();
+            heroSection.style.display = 'block';
+            renderTestimonials(translations[currentLang].testimonials); // Render testimonials when showing hero
+        }
+
+        /**
+         * Shows the courses listing section and hides others.
+         * Renders all courses initially.
+         */
+        function showCoursesListing() {
+            hideAllSections();
+            coursesListingSection.style.display = 'block';
+            renderCourses(currentCourses); // Render all courses when returning to listing
+            searchInput.value = ''; // Clear search
+            levelFilter.value = ''; // Reset filters
+            categoryFilter.value = '';
+        }
+
+        /**
+         * Renders course cards based on the provided array of courses.
+         * @param {Array} filteredCourses - The array of courses to render.
+         */
+        function renderCourses(filteredCourses) {
+            coursesGrid.innerHTML = ''; // Clear previous courses
+            if (filteredCourses.length === 0) {
+                noResultsMessage.classList.remove('hidden');
+                return;
+            }
+            noResultsMessage.classList.add('hidden');
+
+            filteredCourses.forEach(course => {
+                var courseCard = document.createElement('div');
+                courseCard.className = 'course-card p-6 flex flex-col items-center text-center';
+                courseCard.innerHTML = `
+                    <img src="${course.thumbnail}" alt="${currentLang === 'en' ? 'Course thumbnail for ' : 'صورة غلاف دورة '}${course.title}" class="w-full h-48 object-cover rounded-md mb-4 shadow-sm">
+                    <h3 class="text-xl font-semibold mb-2">${course.title}</h3>
+                    <p class="text-gray-600 text-sm mb-4 line-clamp-3">${course.description}</p>
+                    <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-gray-500 mb-4">
+                        <span class="bg-green-50 px-3 py-1 rounded-full">${course.level}</span>
+                        <span class="bg-green-50 px-3 py-1 rounded-full">${course.category}</span>
+                        <span class="bg-green-50 px-3 py-1 rounded-full">${course.duration}</span>
+                    </div>
+                    <button class="btn-primary mt-auto view-course-btn" data-id="${course.id}">${translations[currentLang].view_course}</button>
+                `;
+                coursesGrid.appendChild(courseCard);
+            });
+
+            // Add event listeners to the new buttons
+            document.querySelectorAll('.view-course-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    var courseId = e.target.dataset.id;
+                    showCourseDetails(courseId);
+                });
+            });
+        }
+
+        /**
+         * Filters courses based on search input and dropdown selections.
+         */
+        function filterCourses() {
+            var searchTerm = searchInput.value.toLowerCase();
+            var selectedLevel = levelFilter.value;
+            var selectedCategory = categoryFilter.value;
+
+            var filtered = currentCourses.filter(course => {
+                var matchesSearch = course.title.toLowerCase().includes(searchTerm) ||
+                                      course.description.toLowerCase().includes(searchTerm) ||
+                                      course.instructor.toLowerCase().includes(searchTerm);
+                var matchesLevel = selectedLevel === '' || course.level === selectedLevel;
+                var matchesCategory = selectedCategory === '' || course.category === selectedCategory;
+                return matchesSearch && matchesLevel && matchesCategory;
+            });
+            renderCourses(filtered);
+        }
+
+        /**
+         * Shows the course details section and populates it with data.
+         * Also populates the sidebar. The sidebar's visibility is independent.
+         * @param {string} courseId - The ID of the course to display.
+         */
+        function showCourseDetails(courseId) {
+            // Define langData here so it's accessible within this function
+            var langData = translations[currentLang]; 
+
+            var course = currentCourses.find(c => c.id === courseId);
+            if (!course) {
+                console.error('Course not found:', courseId);
+                showCoursesListing(); // Go back to listing if course not found
+                return;
+            }
+            detailCourseTitle.dataset.currentCourseId = courseId; // Store current course ID
+
+            hideAllSections(); // Hide other sections, but sidebar visibility is separate
+            courseDetailsSection.style.display = 'block';
+
+            detailCourseTitle.textContent = course.title;
+            detailCourseLevel.textContent = course.level;
+            detailCourseDuration.textContent = course.duration;
+            detailCourseVideos.textContent = course.videos;
+            detailCourseInstructor.textContent = course.instructor;
+            detailCourseDescription.textContent = course.description;
+
+            // Load the first lesson's video by default
+            if (course.lessons && course.lessons.length > 0) {
+                loadVideo(course.lessons[0].youtubeId);
+            } else {
+                detailVideoPlayer.src = ''; // Clear player if no lessons
+            }
+
+            // Populate lessons list in main content area
+            lessonList.innerHTML = '';
+            course.lessons.forEach((lesson, index) => {
+                var listItem = document.createElement('li');
+                listItem.className = `p-3 bg-gray-50 rounded-md shadow-sm flex items-center justify-between cursor-pointer hover:bg-gray-100 transition`;
+                if (index === 0) { // Highlight the first lesson
+                    listItem.classList.add(langData.lang_dir === 'ltr' ? 'border-l-4' : 'border-r-4', 'border-green-500', 'active');
+                }
+                listItem.innerHTML = `
+                    <span class="font-medium flex items-center ${langData.lang_dir === 'ltr' ? 'pr-2' : 'pl-2'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ${langData.lang_dir === 'ltr' ? 'mr-2' : 'ml-2'} text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                        </svg>
+                        ${lesson.title}
+                    </span>
+                    <span class="text-sm text-gray-500"></span>
+                `;
+                listItem.dataset.youtubeId = lesson.youtubeId;
+                listItem.dataset.lessonIndex = index; // Store index for highlighting
+                listItem.addEventListener('click', (e) => {
+                    loadVideo(lesson.youtubeId);
+                    highlightActiveLesson(index, 'main');
+                    highlightActiveLesson(index, 'sidebar');
+                });
+                lessonList.appendChild(listItem);
+            });
+
+            // Populate sidebar lessons
+            sidebarLessonList.innerHTML = '';
+            course.lessons.forEach((lesson, index) => {
+                var sidebarListItem = document.createElement('li');
+                sidebarListItem.className = `${langData.lang_dir === 'ltr' ? 'text-left' : 'text-right'} ${index === 0 ? 'active' : ''}`;
+                sidebarListItem.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ${langData.lang_dir === 'ltr' ? 'mr-2' : 'ml-2'}" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                        </svg>
+                    ${lesson.title}
+                `;
+                sidebarListItem.dataset.youtubeId = lesson.youtubeId;
+                sidebarListItem.dataset.lessonIndex = index; // Store index for highlighting
+                sidebarListItem.addEventListener('click', (e) => {
+                    loadVideo(lesson.youtubeId);
+                    highlightActiveLesson(index, 'main');
+                    highlightActiveLesson(index, 'sidebar');
+                });
+                sidebarLessonList.appendChild(sidebarListItem);
+            });
+            highlightActiveLesson(0, 'main'); // Initial highlight for main content's lesson list
+            highlightActiveLesson(0, 'sidebar'); // Initial highlight for sidebar's lesson list
+        }
+
+        /**
+         * Loads a YouTube video into the iframe.
+         * Handles both single video IDs and playlist URLs.
+         * @param {string} youtubeId - The YouTube video ID or playlist ID.
+         */
+        function loadVideo(youtubeId) {
+            var src = `https://www.youtube.com/embed/${youtubeId}?rel=0`;
+            if (youtubeId.includes('videoseries?list=')) {
+                src = `https://www.youtube.com/embed/videoseries?list=${youtubeId.split('?list=')[1]}&rel=0`;
+            }
+            detailVideoPlayer.src = src;
+        }
+
+        /**
+         * Highlights the currently active lesson in a given list.
+         * @param {number} activeIndex - The index of the lesson to highlight.
+         * @param {string} listType - 'main' or 'sidebar' to specify which list to update.
+         */
+        function highlightActiveLesson(activeIndex, listType) {
+            var list = listType === 'main' ? lessonList : sidebarLessonList;
+            // Ensure langData is available here too, if this function can be called independently
+            var langData = translations[currentLang]; 
+            var directionClass = langData.lang_dir === 'ltr' ? 'border-l-4' : 'border-r-4';
+
+            // Remove highlight from all items in the specified list
+            list.querySelectorAll('li').forEach(item => {
+                item.classList.remove('active', 'border-l-4', 'border-r-4', 'border-green-500');
+                if (listType === 'main') {
+                    var svg = item.querySelector('svg');
+                    if (svg) svg.style.color = '#0A3D0A'; // Dark green
+                }
+            });
+
+            // Add highlight to the active item
+            var activeItem = list.querySelector(`li[data-lesson-index="${activeIndex}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active', directionClass, 'border-green-500');
+                if (listType === 'main') {
+                    var svg = activeItem.querySelector('svg');
+                    if (svg) svg.style.color = 'white';
+                }
+            }
+        }
+        
+        // This ensures the DOM is fully loaded before trying to access elements or initialize dependent variables.
+        window.addEventListener('DOMContentLoaded', (event) => {
+            currentCourses = translations[currentLang].courses; // Initialize currentCourses here
+            populateLanguageSelect(); 
+            updateContent();
+            showHeroSection();
+            renderCourses(currentCourses);
+        });
+
+        // Event Listeners for main navigation/sections
+        document.getElementById('explore-courses-btn').addEventListener('click', showCoursesListing);
+        document.getElementById('nav-courses').addEventListener('click', (e) => {
+            e.preventDefault();
+            showCoursesListing();
+        });
+        document.getElementById('nav-about').addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            showAboutUsSection();
+        });
+        document.getElementById('nav-contact').addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            showContactUsSection();
+        });
+
+        document.getElementById('home-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            showHeroSection();
+        });
+        document.getElementById('back-to-courses').addEventListener('click', showCoursesListing);
+        document.getElementById('back-from-about').addEventListener('click', showCoursesListing); // Back from About Us
+        document.getElementById('back-from-contact').addEventListener('click', showCoursesListing); // Back from Contact Us
+
+        searchInput.addEventListener('input', filterCourses);
+        levelFilter.addEventListener('change', filterCourses);
+        categoryFilter.addEventListener('change', filterCourses);
+
+        languageSelect.addEventListener('change', (e) => {
+            currentLang = e.target.value;
+            updateContent();
+            // Re-apply current view (hero, listing, or details) to update dynamically changed texts
+            if (heroSection.style.display !== 'none') {
+                showHeroSection(); // Re-show hero to update its text and testimonials
+            } else if (coursesListingSection.style.display !== 'none') {
+                showCoursesListing(); // Re-show courses to update texts
+            } else if (courseDetailsSection.style.display !== 'none') {
+                var currentCourseId = detailCourseTitle.dataset.currentCourseId;
+                if (currentCourseId) {
+                    showCourseDetails(currentCourseId);
+                }
+            } else if (aboutUsSection.style.display !== 'none') {
+                showAboutUsSection(); // Re-show about us to update its text
+            } else if (contactUsSection.style.display !== 'none') {
+                showContactUsSection(); // Re-show contact us to update its text
+            }
+            // Clear chat history on language change for simplicity
+            chatBody.innerHTML = '';
+            chatHistory = [];
+        });
+
+        // Sidebar Toggle and Close Listeners
+        sidebarToggleButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent document click from immediately closing it
+            toggleSidebar();
+        });
+        sidebarCloseButton.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // Ensure sidebar is closed when any main nav link is clicked
+        // This is important because the sidebar toggle is now independent
+        document.querySelectorAll('#nav-courses, #nav-about, #nav-contact, #home-link, #explore-courses-btn').forEach(link => {
+            link.addEventListener('click', () => {
+                if (!lessonsSidebar.classList.contains('hidden')) { // If sidebar is open, close it
+                    toggleSidebar();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
